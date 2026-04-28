@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About · Jewish India Digital Heritage Trail</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark peacock-mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <span class="brand-name">Jewish India</span>
+        <span class="brand-tag">Digital Heritage Trail</span>
+      </span>
+    </a>
+    <nav class="site-nav">
+      <a href="index.html" data-nav="home">Home</a>
+      <a href="map.html" data-nav="map">Map</a>
+      <a href="synagogues.html" data-nav="synagogues">Synagogues</a>
+      <a href="cemeteries.html" data-nav="cemeteries">Cemeteries</a>
+      <a href="mills.html" data-nav="mills">Sassoon Mills</a>
+      <a href="about.html" data-nav="about">About</a>
+    </nav>
+    <div class="site-search">
+      <input type="search" id="site-search" placeholder="Search sites…" autocomplete="off">
+      <div class="site-search-results" id="site-search-results"></div>
+    </div>
+    <div class="site-header-utils">
+      <button id="theme-toggle" class="icon-btn" type="button" aria-pressed="false" title="Toggle dark mode"></button>
+      <button id="menu-btn" class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" title="Menu"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main class="feature-page">
+  <h1>About this trail</h1>
+  <p>The Jewish India Digital Heritage Trail is a working catalogue of the built and spatial heritage of India's Jewish communities — the Bene Israel, the Baghdadi (including the Sassoon family network), the Cochini and other Jews of Kerala, communities of the broader Indian Jewish diaspora, and emerging communities such as the Bene Menashe.</p>
+
+  <h2>Data sources</h2>
+  <p>The map currently draws on a GeoJSON dataset of Jewish heritage sites in Bombay and the Deccan, a spreadsheet of synagogues across India, Pakistan, and Burma, the field survey of approximately 42 Jewish cemeteries by Isaac Solomon, and an image collection covering individual sites and the Sassoon Mills label and agreement archive. Where founding dates, communities, or coordinates are inferred rather than recorded, the entry is marked as such and should be treated as preliminary.</p>
+
+  <h2 id="data-schema">The data structure</h2>
+  <p>Every site on the trail — synagogue, cemetery, mill, school, garden — is one entry in a single dataset. Each entry has the same set of fields, listed below. Empty fields are fine; the site only renders what's there.</p>
+
+  <table class="schema-table">
+    <thead>
+      <tr><th>Field</th><th>Required</th><th>What it is</th><th>Allowed values / example</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>id</code></td><td>auto</td><td>Short URL slug. Auto-generated from the name if blank.</td><td><code>magen-david-synagogue</code></td></tr>
+      <tr><td><code>name</code></td><td>yes</td><td>Display name of the site.</td><td>Magen David Synagogue</td></tr>
+      <tr><td><code>category</code></td><td>yes</td><td>What kind of site it is.</td><td><code>synagogue</code> · <code>cemetery</code> · <code>school</code> · <code>hospital</code> · <code>library</code> · <code>clock_tower</code> · <code>garden</code> · <code>dock</code> · <code>mill</code> · <code>mill_site</code> · <code>district</code> · <code>chabad</code> · <code>civic</code> · <code>other</code></td></tr>
+      <tr><td><code>community</code></td><td>yes</td><td>Which Jewish community/communities the site belongs to. Comma-separated for multiple.</td><td><code>bene_israel</code> · <code>baghdadi</code> · <code>cochini</code> · <code>kerala</code> · <code>diaspora</code> · <code>emerging</code></td></tr>
+      <tr><td><code>lat</code> / <code>lon</code></td><td>recommended</td><td>Decimal coordinates. Leave blank if unknown.</td><td><code>18.9669</code> / <code>72.8322</code></td></tr>
+      <tr><td><code>coords_approximate</code></td><td>no</td><td>Mark <code>TRUE</code> when only city-level coordinates are known.</td><td><code>TRUE</code> / <code>FALSE</code></td></tr>
+      <tr><td><code>era_start</code></td><td>no</td><td>Founding year. Use a negative number for BCE.</td><td><code>1861</code> · <code>-562</code></td></tr>
+      <tr><td><code>era_end</code></td><td>no</td><td>Year demolished or closed; blank if still standing.</td><td><code>1971</code></td></tr>
+      <tr><td><code>city</code> / <code>state</code></td><td>recommended</td><td>Place names as you'd write them in prose.</td><td>Bombay / Maharashtra</td></tr>
+      <tr><td><code>address</code></td><td>no</td><td>Free-form street address.</td><td>340 Sir J. J. Road, Byculla</td></tr>
+      <tr><td><code>description</code></td><td>no</td><td>One or more paragraphs about the site.</td><td>Built 1861 by David Sassoon…</td></tr>
+      <tr><td><code>image_folder</code></td><td>no</td><td>Name of the folder under <code>Images/</code> that holds photos of this site.</td><td><code>Magen David Synagogue</code></td></tr>
+      <tr><td><code>iiif_manifest</code></td><td>no</td><td>URL of an IIIF manifest if you have one.</td><td><code>https://…/manifest.json</code></td></tr>
+      <tr><td><code>verified</code></td><td>no</td><td>Set to <code>TRUE</code> once a person has reviewed the row.</td><td><code>TRUE</code> / <code>FALSE</code></td></tr>
+      <tr><td><code>sources</code></td><td>no</td><td>Where the data came from. Comma-separated for multiple.</td><td>Sassoon family papers; site visit</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="google-sheet">Editing data from a Google Sheet</h2>
+  <p>You don't need to touch JSON. The recommended workflow is to keep all entries in a Google Sheet using the columns above, then sync that sheet to the site whenever you make changes.</p>
+
+  <h3>One-time setup</h3>
+  <ol class="numbered">
+    <li>Create a new Google Sheet. Use the column headers from the table above as the first row, exactly as written (lowercase, with underscores).</li>
+    <li>To avoid typing them, download the starter template here: <a href="data/sheet-template.csv" download>sheet-template.csv</a> — open it, then in Google Sheets choose <em>File → Import → Upload</em>.</li>
+    <li>In Google Sheets, go to <em>File → Share → Publish to web</em>. Pick the sheet (or "Entire Document"), choose <strong>Comma-separated values (.csv)</strong>, and click <em>Publish</em>. Copy the URL it gives you — it looks like <code>https://docs.google.com/spreadsheets/d/…/pub?output=csv</code>.</li>
+  </ol>
+
+  <h3>Each time you want to update the site</h3>
+  <ol class="numbered">
+    <li>Edit your sheet — add rows, fix typos, fill in coordinates, write descriptions.</li>
+    <li>From inside the <code>jewish-india-trail/</code> folder, run:
+      <pre>python sync-from-sheet.py "&lt;your published-csv URL&gt;"</pre>
+      The script overwrites <code>data/features.json</code> and rebuilds <code>data/features.js</code> (the inline copy used so the site works without a server). If you set <code>SHEET_URL</code> at the top of the script once, you can just run <code>python sync-from-sheet.py</code> with no arguments.</li>
+    <li>Reload the site in your browser. Your sheet's data is now live.</li>
+  </ol>
+  <p>Image lists are <strong>not</strong> stored in the sheet — they're discovered by scanning the matching <code>image_folder</code> on disk. If you've added new photos, run <code>python rebuild.py</code> after the sync to refresh the image lists.</p>
+
+  <h3>What happens to existing fields when you sync?</h3>
+  <p>The sync overwrites every field that the sheet defines. It <em>preserves</em> per-site image lists discovered by <code>rebuild.py</code> — so you can keep editing the sheet without losing the photo references. If you remove a row from the sheet, that site disappears from the next sync.</p>
+
+  <h2>How to add images</h2>
+  <p>For sites already in the Bombay/Deccan dataset, drop images into the matching folder under <code>Images/</code> (e.g. <code>Images/Magen David Synagogue/</code>) and run <code>python rebuild.py</code>. For the Sassoon Mills collection, images live under <code>Images/jewish-india-trail/images/mills/</code>. Where you have IIIF manifests, the data model includes an <code>iiif_manifest</code> field — a future iteration of this site can wire those directly into a Mirador or OpenSeadragon viewer.</p>
+
+  <h2>Sustainability</h2>
+  <p>This site is built as plain HTML, CSS, and JavaScript — no build step, no database. It can be hosted free on GitHub Pages, Netlify, or Cloudflare Pages, or simply opened from a folder. Map tiles come from CARTO's free Positron basemap; map rendering uses the open-source Leaflet library. Because all data is in a single JSON file (or a Google Sheet that produces one), the site is straightforward to migrate later to a static site generator such as Astro if you want per-feature markdown pages.</p>
+
+  <h2>Acknowledgements</h2>
+  <p>Cemetery field survey data primarily by Isaac Solomon. Mill labels and ephemera from the Sassoon Mills collection. Site coordinates for Bombay and the Deccan from a contributor-maintained GeoJSON.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span class="footer-mark peacock-mark" aria-hidden="true"></span>
+    <p>Jewish India Digital Heritage Trail</p>
+  </div>
+</footer>
+
+<script src="data/features.js"></script>
+<script src="assets/site.js"></script>
+<script>setActiveNav("about");</script>
+</body>
+</html>

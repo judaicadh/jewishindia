@@ -1,0 +1,389 @@
+[
+  {
+    "name": "Magen Abraham Synagogue",
+    "address": "Bukhara Mohalla",
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "founded": 1933,
+    "ended": null,
+    "notes": "Consecration took place on 2.9.1934; named after Dr. Abraham Erulkar."
+  },
+  {
+    "name": "Gate of Mercy Synagogue (Shaar Ha Rahamm)",
+    "address": "254, Samuel St, Mandvi",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1796,
+    "ended": null,
+    "notes": "Constructed by Samuel Ezekiel Divekar; renamed in 1896."
+  },
+  {
+    "name": "Shaare Rason Synagogue",
+    "address": "90, Tantanpura Street",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1840,
+    "ended": null,
+    "notes": "Popularly known as \"The New Synagogue\"."
+  },
+  {
+    "name": "Magen David Synagogue",
+    "address": "Byculla",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1861,
+    "ended": null,
+    "notes": "Built by David Sassoon; known as \"David Sassoon Synagogue\"."
+  },
+  {
+    "name": "Knesseth Bene-Israel Prayer Hall (Malavarchi Masjid)",
+    "address": "Tartanpura Street",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1872,
+    "ended": "Closed",
+    "notes": ""
+  },
+  {
+    "name": "Knesseth Eliahoo Synagogue",
+    "address": "Dr. V.S. Gandhi Marg, Fort",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1884,
+    "ended": null,
+    "notes": "Built and endowed by Jacob Sassoon."
+  },
+  {
+    "name": "Tifereth Israel Synagogue",
+    "address": "92, K.K. Marg Jacob Circle",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1886,
+    "ended": null,
+    "notes": "Consecrated as a Synagogue in 1924."
+  },
+  {
+    "name": "The Etz Haeem Prayer Hall",
+    "address": "19 Umarkhadi",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1888,
+    "ended": null,
+    "notes": "Started by Mr. Haeem Samuel Kehimkar."
+  },
+  {
+    "name": "Magen Hassidim Synagogue",
+    "address": "8, Mohamad Shahid Marg, Agripada",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1904,
+    "ended": null,
+    "notes": "Building completed in 1931."
+  },
+  {
+    "name": "Parel Bene Israel Prayer Hall",
+    "address": "Parel",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1930,
+    "ended": 1978,
+    "notes": ""
+  },
+  {
+    "name": "Kurla Bene Israel Prayer Hall",
+    "address": "Kurla (West)",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1946,
+    "ended": null,
+    "notes": "Started by Bene Israel residents of Kurla."
+  },
+  {
+    "name": "Bene Israel Prayer Hall",
+    "address": "Bandra",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1930,
+    "ended": "Closed",
+    "notes": "Started by Dr. E. Moses and Khan Sahib R. Samson."
+  },
+  {
+    "name": "Rodef Shalom Synagogue (Jewish Religious Union)",
+    "address": "26, Sussex Road, Byculla",
+    "city": "Bombay",
+    "state": "Maharashtra",
+    "founded": 1925,
+    "ended": null,
+    "notes": "Synagogue of Reform Jews."
+  },
+  {
+    "name": "Neveh Shalome Synagogue",
+    "address": "9, Jackson Lane",
+    "city": "Calcutta",
+    "state": "West Bengal",
+    "founded": 1825,
+    "ended": null,
+    "notes": "First Synagogue in Calcutta; rebuilt in 1911."
+  },
+  {
+    "name": "Beth-El Synagogue",
+    "address": "26/1, Pollack Street",
+    "city": "Calcutta",
+    "state": "West Bengal",
+    "founded": 1856,
+    "ended": null,
+    "notes": "Erected by David Joseph Ezra and Ezekiel Judah."
+  },
+  {
+    "name": "Magen David Synagogue",
+    "address": "109-A Peplab Rash Bihari Bose Road",
+    "city": "Calcutta",
+    "state": "West Bengal",
+    "founded": 1884,
+    "ended": null,
+    "notes": "Built by Elias David Joseph Ezra; largest in the East."
+  },
+  {
+    "name": "Shaare Rason Synagogue",
+    "address": "Sudder Street",
+    "city": "Calcutta",
+    "state": "West Bengal",
+    "founded": 1897,
+    "ended": "Closed",
+    "notes": "Started by A. Levroy."
+  },
+  {
+    "name": "Magen Aboth Synagogue",
+    "address": "25, Blackburn Lane",
+    "city": "Calcutta",
+    "state": "West Bengal",
+    "founded": "N/A",
+    "ended": "Closed",
+    "notes": ""
+  },
+  {
+    "name": "Judah Hyam Synagogue",
+    "address": "2, Humayun Road",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "founded": 1956,
+    "ended": null,
+    "notes": "Hall serves as a centre for Jewish and inter-faith studies."
+  },
+  {
+    "name": "Jewish Synagogue",
+    "address": "Cranganore",
+    "city": "Cochin",
+    "state": "Kerala",
+    "founded": 1345,
+    "ended": "Closed",
+    "notes": ""
+  },
+  {
+    "name": "Paradesi Synagogue",
+    "address": "Jew Town, Mattancherry",
+    "city": "Cochin",
+    "state": "Kerala",
+    "founded": 1568,
+    "ended": null,
+    "notes": "Built by descendants of Spanish, Dutch, and European Jews."
+  },
+  {
+    "name": "Chennamangalam Synagogue",
+    "address": "Jew Street, Chennamangalam",
+    "city": "Cochin",
+    "state": "Kerala",
+    "founded": 1614,
+    "ended": null,
+    "notes": "Rebuilt later (year cut off in text)."
+  },
+  {
+    "name": "Parur Synagogue",
+    "address": "Jew Street, North Parur",
+    "city": "Cochin",
+    "state": "Kerala",
+    "founded": 1616,
+    "ended": null,
+    "notes": ""
+  },
+  {
+    "name": "Thekumbakkam Synagogue",
+    "address": "Jew Street, Ernakulam",
+    "city": "Cochin",
+    "state": "Kerala",
+    "founded": 1781,
+    "ended": "Closed",
+    "notes": ""
+  },
+  {
+    "name": "Kadavumbagham Synagogue",
+    "address": "Jew Street, Ernakulam",
+    "city": "Cochin",
+    "state": "Kerala",
+    "founded": 1939,
+    "ended": "Closed",
+    "notes": ""
+  },
+  {
+    "name": "Ohel David Synagogue",
+    "address": "Synagogue Street, Poona Camp",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "founded": 1867,
+    "ended": null,
+    "notes": "Popularly known as \"Lal Deval\", built by David Sassoon."
+  },
+  {
+    "name": "Succath Shelomo Synagogue",
+    "address": "93, Rasta Peth",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "founded": 1921,
+    "ended": null,
+    "notes": "Building completed on 21.5.1921."
+  },
+  {
+    "name": "Beth-el Synagogue",
+    "address": "Rewdanda, Alibag Tehsil",
+    "city": "Raigad",
+    "state": "Maharashtra",
+    "founded": 1848,
+    "ended": null,
+    "notes": "First synagogue built in Raigad District."
+  },
+  {
+    "name": "Talekar Synagogue",
+    "address": "Post Chordee",
+    "city": "Talekar",
+    "state": "Maharashtra",
+    "founded": 1893,
+    "ended": "Closed",
+    "notes": "Built by Haeem Samuel Penkar."
+  },
+  {
+    "name": "Knesseth Israel Synagogue",
+    "address": "Talley Ghosaley, Mangaon Tehsil",
+    "city": "Mangaon",
+    "state": "Maharashtra",
+    "founded": 1849,
+    "ended": "Closed",
+    "notes": "Burnt in 1852, rebuilt 1876; donated for a Library."
+  },
+  {
+    "name": "Bene Israel Synagogue",
+    "address": "Talley Ghosaley",
+    "city": "Borley",
+    "state": "Maharashtra",
+    "founded": 1852,
+    "ended": "Closed",
+    "notes": ""
+  },
+  {
+    "name": "Magen Aboth Synagogue",
+    "address": "Alibag",
+    "city": "Alibag",
+    "state": "Maharashtra",
+    "founded": 1848,
+    "ended": null,
+    "notes": "Rebuilt in 1910."
+  },
+  {
+    "name": "Beth-El (House of God) Synagogue",
+    "address": "Mirchi Gali",
+    "city": "Panvel",
+    "state": "Maharashtra",
+    "founded": 1849,
+    "ended": null,
+    "notes": "Erected by subscriptions from Bene Israels."
+  },
+  {
+    "name": "Beth-Ha-Elohim Synagogue",
+    "address": "Pen",
+    "city": "Pen",
+    "state": "Maharashtra",
+    "founded": 1863,
+    "ended": null,
+    "notes": "Rebuilt and rededicated in 1893."
+  },
+  {
+    "name": "Hesed-El Synagogue",
+    "address": "Poynad, Alibag Tehsil",
+    "city": "Poynad",
+    "state": "Maharashtra",
+    "founded": 1866,
+    "ended": "Closed",
+    "notes": "Rebuilt by local subscriptions."
+  },
+  {
+    "name": "Shaare Shalom Synagogue",
+    "address": "Borlai Hubshi, Janjira",
+    "city": "Borlai",
+    "state": "Maharashtra",
+    "founded": 1869,
+    "ended": "Closed",
+    "notes": "Built at the expense of Shalom Isaac Sagaonkar."
+  },
+  {
+    "name": "Ambepur Synagogue",
+    "address": "Ambepur (Cheul), Alibag Tehsil",
+    "city": "Ambepur",
+    "state": "Maharashtra",
+    "founded": 1874,
+    "ended": "Closed",
+    "notes": "Rebuilt in 1884."
+  },
+  {
+    "name": "Beth-El Synagogue",
+    "address": "Ashtami, Roha Tehsil",
+    "city": "Ashtami",
+    "state": "Maharashtra",
+    "founded": 1882,
+    "ended": "Closed",
+    "notes": ""
+  },
+  {
+    "name": "Shahar Hatephills Synagogue",
+    "address": "Mhasla",
+    "city": "Mhasla",
+    "state": "Maharashtra",
+    "founded": 1886,
+    "ended": "Closed",
+    "notes": "Rebuilt by voluntary contributions."
+  },
+  {
+    "name": "Orle-Israel Synagogue",
+    "address": "Nandgaon, Murud Tehsil",
+    "city": "Nandgaon",
+    "state": "Maharashtra",
+    "founded": 1896,
+    "ended": "Closed",
+    "notes": "Land presented by Pensioner Havaldar Moses Malyankar."
+  },
+  {
+    "name": "Shaar Hashamaim Synagogue",
+    "address": "Tembi Naka",
+    "city": "Thane",
+    "state": "Maharashtra",
+    "founded": 1879,
+    "ended": null,
+    "notes": "Foundation stone laid in 1878."
+  },
+  {
+    "name": "Musmeah Yeshua Synagogue",
+    "address": "58-26th Street",
+    "city": "Rangoon",
+    "state": "Burma",
+    "founded": 1857,
+    "ended": null,
+    "notes": ""
+  },
+  {
+    "name": "Magen Shalom Synagogue",
+    "address": "Jamila Street and Nishtar Road",
+    "city": "Karachi",
+    "state": "Pakistan",
+    "founded": 1893,
+    "ended": null,
+    "notes": "Built by Solomon David Umerdekar; only synagogue in Karachi."
+  }
+]
