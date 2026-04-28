@@ -1,0 +1,4 @@
+id,name,category,community,lat,lon,coords_approximate,era_start,era_end,city,state,address,description,image_folder,iiif_manifest,verified,sources
+magen-david-synagogue,Magen David Synagogue,synagogue,baghdadi,18.9669,72.8322,FALSE,1861,,Bombay,Maharashtra,"340 Sir J. J. Road, Byculla","Built 1861 by David Sassoon. Adjacent to the Sassoon school and clock tower complex.",Magen David Synagogue,,TRUE,"Sassoon family papers; site visit"
+,Tipu Sultan Shahid Masjid Cemetery,cemetery,bene_israel,,,TRUE,,,Mumbai,Maharashtra,,"Bene Israel section adjoining the larger municipal cemetery. Approximate coordinates only.",,,FALSE,"Isaac Solomon survey, 2019"
+,Sample Empty Row — duplicate this and fill in,,,,,,,,,,,,,,,
