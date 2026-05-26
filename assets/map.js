@@ -9,8 +9,6 @@ const COMMUNITY_COLORS = {
   emerging:    "#6f4e7c"
 };
 
-
-
 let MAP, ALL = [], LAYER, MARKERS = {};
 
 const state = {
@@ -31,7 +29,6 @@ function urlState() {
     state.categories = new Set([u.get("category")]);
   }
 }
-
 
 function communityIcon(community) {
   const c = (community && community.find(x => COMMUNITY_COLORS[x])) || "bene_israel";
@@ -67,6 +64,7 @@ function buildFilters() {
         ${(typeof CATEGORY_LABELS !== 'undefined' && CATEGORY_LABELS[c]) || c}
       </label>
     `).join("");
+    
   // Regions — top cities
   const regions = {};
   ALL.forEach(f => {
@@ -220,7 +218,7 @@ function render() {
     const newUrl = new URL(window.location);
     newUrl.searchParams.set('id', f.id);
     
-    // Optional: clear lat/lng if they were there, since we are now focusing on an ID
+    // Clear lat/lng if they were there, since we are now focusing on an ID
     newUrl.searchParams.delete('lat');
     newUrl.searchParams.delete('lng');
     newUrl.searchParams.delete('z');
@@ -241,29 +239,56 @@ function showDetail(f) {
   // 1. Smart Media Handling
   let mediaHtml = '';
 
-  // Safely ensure manifests is an array (handles old string data gracefully just in case)
+  // Safely ensure manifests is an array
   const manifests = Array.isArray(f.iiif_manifest) 
     ? f.iiif_manifest 
     : (f.iiif_manifest ? [f.iiif_manifest] : []);
 
   if (manifests.length > 0) {
-    // Loop through every manifest and generate an iframe for it
-    mediaHtml = manifests.map((manifestUrl, index) => `
-      <div class="iiif-container" style="margin: 1rem 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #111;">
-        <iframe 
-          src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" 
-          width="100%" 
-          height="320px" 
-          frameborder="0" 
-          allowfullscreen
-          title="IIIF Document Viewer ${index + 1}">
-        </iframe>
+    // Multi-viewer Horizontal Slider (same logic as feature.html)
+    mediaHtml = `
+      <style>
+        .sidebar-iiif-slider {
+          display: flex;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          gap: 1rem;
+          padding-bottom: 0.5rem;
+          scrollbar-width: thin;
+        }
+        .sidebar-iiif-slider::-webkit-scrollbar { height: 6px; }
+        .sidebar-iiif-slider::-webkit-scrollbar-thumb { background: var(--border, #ccc); border-radius: 4px; }
+        .sidebar-iiif-slide {
+          flex: 0 0 100%;
+          scroll-snap-align: center;
+          min-width: 0;
+        }
+      </style>
+      <div style="margin: 1rem 0;">
+        ${manifests.length > 1 ? `<p style="font-size: 0.8em; color: var(--muted); margin-bottom: 0.5rem;">Swipe to view ${manifests.length} collections →</p>` : ''}
+        <div class="sidebar-iiif-slider">
+          ${manifests.map((manifestUrl, index) => `
+            <div class="sidebar-iiif-slide">
+              <div style="border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #111;">
+                <iframe 
+                  src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" 
+                  width="100%" 
+                  height="280px" 
+                  frameborder="0" 
+                  allowfullscreen
+                  title="IIIF Document Viewer ${index + 1}">
+                </iframe>
+              </div>
+              <p style="margin-top: 0.5rem; font-size: 0.8em; text-align: center;">
+                <a class="full-link" href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" target="_blank" rel="noopener">
+                  Open Viewer ${manifests.length > 1 ? index + 1 : ''} full screen ↗
+                </a>
+              </p>
+            </div>
+          `).join("")}
+        </div>
       </div>
-      <a class="full-link" style="font-size: 0.85em; margin-bottom: 1rem; display: inline-block;" href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" target="_blank" rel="noopener">
-        Open Viewer ${manifests.length > 1 ? index + 1 : ''} in full screen ↗
-      </a>
-    `).join("");
-
+    `;
   } else if (f.images && f.images.length > 0) {
     // If no IIIF, but local images exist, show the standard gallery
     const imgs = f.images.slice(0, 6);
@@ -301,6 +326,7 @@ function showDetail(f) {
     </div>
   `;
 }
+
 function setupSidebarToggle() {
   const layout  = document.querySelector('.map-layout');
   const toggle  = document.getElementById('sidebar-toggle');
@@ -349,25 +375,31 @@ function setupSidebarToggle() {
   buildFilters();
   setupSidebarToggle();
   render();
+
+  // --- DYNAMIC VIEWPORT SYNC ---
+  // Allow initial page load animations (like fitBounds) to finish before tracking movement
+  let isMapReady = false;
+  setTimeout(() => isMapReady = true, 1000);
+
   MAP.on('moveend', () => {
+    // Skip if the map is just doing its initial automated load/zoom
+    if (!isMapReady) return;
+
     const currentUrl = new URL(window.location);
+    const center = MAP.getCenter();
+    const zoom = MAP.getZoom();
     
-    // If we are actively focused on an ID, we don't want to overwrite it with coordinates
-    if (!currentUrl.searchParams.has('id')) {
-      const center = MAP.getCenter();
-      const zoom = MAP.getZoom();
-      
-      // Use .toFixed(4) to keep the URL clean and avoid massive decimal numbers
-      currentUrl.searchParams.set('lat', center.lat.toFixed(4));
-      currentUrl.searchParams.set('lng', center.lng.toFixed(4));
-      currentUrl.searchParams.set('z', zoom);
-      
-      // Use replaceState instead of pushState so we don't flood the user's browser history
-      // (This means they won't have to click 'Back' 50 times if they dragged the map 50 times)
-      window.history.replaceState({}, '', currentUrl);
-    }
+    // The user has moved the map. Drop the specific feature ID and track coordinates instead.
+    currentUrl.searchParams.delete('id');
+    
+    currentUrl.searchParams.set('lat', center.lat.toFixed(4));
+    currentUrl.searchParams.set('lng', center.lng.toFixed(4));
+    currentUrl.searchParams.set('z', zoom);
+    
+    // Update the URL quietly
+    window.history.replaceState({}, '', currentUrl);
   });
-  // If url has community filter focused on Mumbai, zoom there
+
   // --- URL ROUTING LOGIC ---
   const u = new URLSearchParams(location.search);
 
