@@ -344,7 +344,24 @@ function setupSidebarToggle() {
   buildFilters();
   setupSidebarToggle();
   render();
-
+  MAP.on('moveend', () => {
+    const currentUrl = new URL(window.location);
+    
+    // If we are actively focused on an ID, we don't want to overwrite it with coordinates
+    if (!currentUrl.searchParams.has('id')) {
+      const center = MAP.getCenter();
+      const zoom = MAP.getZoom();
+      
+      // Use .toFixed(4) to keep the URL clean and avoid massive decimal numbers
+      currentUrl.searchParams.set('lat', center.lat.toFixed(4));
+      currentUrl.searchParams.set('lng', center.lng.toFixed(4));
+      currentUrl.searchParams.set('z', zoom);
+      
+      // Use replaceState instead of pushState so we don't flood the user's browser history
+      // (This means they won't have to click 'Back' 50 times if they dragged the map 50 times)
+      window.history.replaceState({}, '', currentUrl);
+    }
+  });
   // If url has community filter focused on Mumbai, zoom there
   // --- URL ROUTING LOGIC ---
   const u = new URLSearchParams(location.search);
