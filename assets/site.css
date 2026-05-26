@@ -1079,6 +1079,51 @@ section.section .section-inner { max-width: var(--maxw); margin: 0 auto; }
   .map-layout { grid-template-rows: auto 50vh auto; }
 }
 
+/* ============ IIIF Viewer ============ */
+.iiif-section {
+  margin: 36px 0 0;
+  border-top: 1px solid var(--line);
+  padding-top: 28px;
+}
+.iiif-heading {
+  font-size: 1.35rem;
+  margin: 0 0 14px;
+  color: var(--peacock-deep);
+}
+/* Responsive 16:10 aspect-ratio container */
+.iiif-embed {
+  position: relative;
+  width: 100%;
+  padding-bottom: 62.5%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--peacock-deep);
+}
+.iiif-embed iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+.iiif-links {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 10px;
+}
+.iiif-links a { color: var(--peacock); }
+.iiif-links a:hover { color: var(--terracotta); }
+/* Small "View IIIF" link in the map side-panel */
+.iiif-panel-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--peacock-deep);
+}
+.iiif-panel-link:hover { color: var(--terracotta); }
+
 /* ============ Leaflet popup styling ============ */
 .leaflet-popup-content { font-family: var(--sans); font-size: 0.88rem; }
 .leaflet-popup-content strong a { color: var(--peacock-deep); font-family: var(--serif); font-size: 1.05rem; }

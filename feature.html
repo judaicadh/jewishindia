@@ -81,6 +81,25 @@
     : `<div class="feature-desc-placeholder">Description not yet written. Edit <code>data/features.json</code> to add one.</div>`;
   const sources = f.sources && f.sources.length
     ? `<p class="feature-sources"><strong>Sources:</strong> ${f.sources.join('; ')}</p>` : '';
+
+  // IIIF viewer — rendered only when a manifest URL is present
+  const iiifHtml = f.iiif_manifest ? `
+    <section class="iiif-section">
+      <h2 class="iiif-heading">IIIF Collection</h2>
+      <div class="iiif-embed">
+        <iframe
+          src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}"
+          allowfullscreen
+          title="IIIF viewer for ${f.name}">
+        </iframe>
+      </div>
+      <p class="iiif-links">
+        <a href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}" target="_blank" rel="noopener">Open in Universal Viewer ↗</a>
+        &ensp;·&ensp;
+        <a href="${f.iiif_manifest}" target="_blank" rel="noopener">View manifest JSON ↗</a>
+      </p>
+    </section>` : '';
+
   root.innerHTML = `
     <p class="back-link"><a href="javascript:history.back()">← Back</a></p>
     <h1>${f.name}</h1>
@@ -89,6 +108,7 @@
     ${desc}
     ${f.address ? `<p class="feature-address"><strong>Address:</strong> ${f.address}${f.state?', '+f.state:''}</p>` : ''}
     ${galleryHtml}
+    ${iiifHtml}
     ${f.coords ? `<div id="mini-map" class="mini-map"></div>` : ''}
     ${sources}
   `;

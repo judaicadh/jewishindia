@@ -238,6 +238,7 @@ function showDetail(f) {
       ${galleryHtml}
       ${desc}
       ${f.address ? `<div class="panel-address"><strong>Address:</strong> ${f.address}</div>` : ''}
+      ${f.iiif_manifest ? `<a class="iiif-panel-link" href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}" target="_blank" rel="noopener">View IIIF collection ↗</a>` : ''}
       <a class="full-link" href="feature.html?id=${encodeURIComponent(f.id)}">View full page →</a>
     </div>
   `;
