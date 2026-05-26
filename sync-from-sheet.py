@@ -121,7 +121,11 @@ def row_to_feature(row, existing_by_id):
     }
     if feat['image_folder']:
         feat['image_dir'] = f"../{feat['image_folder']}"
+    for cat in feat['category']:
+        if cat not in VALID_CATEGORIES:
+            print(f"  warn: unknown category {cat!r} on {name}")
 
+    return feat
     # Carry over auto-generated image lists from the existing features.json
     # (so the sheet doesn't need to know about images on disk)
     prev = existing_by_id.get(fid)
