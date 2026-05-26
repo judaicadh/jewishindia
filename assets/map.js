@@ -186,10 +186,10 @@ function passesFilters(f) {
     if (!state.regions.has(r)) return false;
   }
   // Timeline
-  if (f.era_start == null) {
+  if (f.date_start == null) {
     if (!state.showUndated) return false;
   } else {
-    if (f.era_start < state.yearMin || f.era_start > state.yearMax) return false;
+    if (f.date_start < state.yearMin || f.date_start > state.yearMax) return false;
   }
   return true;
 }
