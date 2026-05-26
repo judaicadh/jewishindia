@@ -64,8 +64,8 @@ function categoryLabel(feature) {
 }
 
 function eraText(feature) {
-  if (feature.era_start && feature.era_end) return `${feature.era_start}–${feature.era_end}`;
-  if (feature.era_start) return `est. ${feature.era_start}`;
+  if (feature.date_start && feature.date_end) return `${feature.date_start}–${feature.date_end}`;
+  if (feature.date_start) return `est. ${feature.date_start}`;
   return "Date unknown";
 }
 
