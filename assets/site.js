@@ -17,7 +17,7 @@ const CATEGORY_LABELS = {
   "library": "Library",
   "mill": "Mill",
   "civic": "Civic",
-  "trade and business": "Trade and Business",
+  "trade_and_business": "Trade and Business",
   "bollywood": "Bollywood",
   "military": "Military",
   "other": "Other"
@@ -53,8 +53,13 @@ function firstImage(feature) {
 }
 
 function communityChips(feature) {
-  return (feature.community || [])
-    .filter(c => COMMUNITY_LABELS[c])  // hide internal-only tags like "civic"
+  // Ensure we are working with an array, even if data is missing
+  const communities = Array.isArray(feature.community) 
+    ? feature.community 
+    : (feature.community ? [feature.community] : []);
+
+  return communities
+    .filter(c => COMMUNITY_LABELS[c]) // Only show valid, labeled communities
     .map(c => `<span class="chip ${c}">${COMMUNITY_LABELS[c]}</span>`)
     .join("");
 }
