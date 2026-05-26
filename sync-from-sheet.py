@@ -53,12 +53,12 @@ sheet = os.getenv('SHEET_URL')
 SHEET_URL = sheet
 
 KNOWN_COLS = {
-    'id','name','category','community','lat','lon','coords_approximate',
+    'id','name','category','community','lat','lon',
     'date_start','date_end','city','state','address','description',
     'image_folder','iiif_manifest','verified','sources'
 }
 
-VALID_COMMUNITIES = {'bene_israel','baghdadi','cochini','kerala','diaspora','emerging'}
+VALID_COMMUNITIES = {'bene israel','baghdadi','cochini','kerala','diaspora','emerging'}
 VALID_CATEGORIES  = {'synagogue','cemetery','school','hospital','library','mill', 'civic','other'}
 
 def slugify(s):
@@ -109,9 +109,8 @@ def row_to_feature(row, existing_by_id):
         'category': row.get('category', 'other').lower() or 'other',
         'community': [c.lower() for c in parse_list(row.get('community')) if c.lower() in VALID_COMMUNITIES],
         'coords': coords,
-        'coords_approximate': truthy(row.get('coords_approximate')),
-        'era_start': parse_int(row.get('era_start')),
-        'era_end':   parse_int(row.get('era_end')),
+        'date_start': parse_int(row.get('date_start')),
+        'date_end':   parse_int(row.get('date_end')),
         'city':  row.get('city') or None,
         'state': row.get('state') or None,
         'address': row.get('address') or None,
