@@ -57,7 +57,7 @@ KNOWN_COLS = {
     'image_folder','iiif_manifest','verified','sources'
 }
 
-VALID_COMMUNITIES = {'Bene Israel','Baghdadi','Cochini','Kerala','Diaspora','Emerging'}
+VALID_COMMUNITIES = {'bene israel','baghdadi','cochini','kerala','diaspora','emerging'}
 VALID_CATEGORIES = {'synagogue','cemetery','education','medical','library','mill','civic','trade and business','bollywood','military','other'}
 
 def slugify(s):
