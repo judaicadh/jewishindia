@@ -17,8 +17,8 @@ const CATEGORY_LABELS = {
   mill: "Mill",
   library: "Library",
   trade_and_buisness: "Trade and Business",
-  military: "Military"
-  bollywood: "Chabad House",
+  military: "Military",
+  bollywood: "Bollywood",
   civic: "Civic",
   other: "Other"
 };
