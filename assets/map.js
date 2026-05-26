@@ -9,6 +9,20 @@ const COMMUNITY_COLORS = {
   emerging:    "#6f4e7c"
 };
 
+const CATEGORY_LABELS = {
+  "synagogue": "Synagogue",
+  "cemetery": "Cemetery",
+  "education": "Education",
+  "medical": "Medical",
+  "library": "Library",
+  "mill": "Mill",
+  "civic": "Civic",
+  "trade and business": "Trade and Business",
+  "bollywood": "Bollywood",
+  "military": "Military",
+  "other": "Other"
+};
+
 let MAP, ALL = [], LAYER, MARKERS = {};
 
 const state = {
@@ -30,6 +44,13 @@ function urlState() {
   }
 }
 
+function categoryLabel(f) {
+  if (!f.category || f.category.length === 0) return '';
+  // Map the internal keys to your labels, then join them with a comma
+  return f.category
+    .map(c => (typeof CATEGORY_LABELS !== 'undefined' ? CATEGORY_LABELS[c] : c))
+    .join(', ');
+}
 function communityIcon(community) {
   const c = (community && community.find(x => COMMUNITY_COLORS[x])) || "bene_israel";
   const color = COMMUNITY_COLORS[c] || "#888";
