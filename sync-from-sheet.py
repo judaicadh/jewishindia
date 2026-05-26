@@ -52,7 +52,7 @@ DATA_JSON = os.path.join(HERE, 'data', 'features.json')
 DATA_JS   = os.path.join(HERE, 'data', 'features.js')
 
 # Paste your published-CSV URL here (or pass on the command line)
-SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSyf6wTEAhfvZYlYKbMMNheC6h7_emAWtJ0gZ_PLCSRQtyNZoEqP1MVxLHECOilT8FK4uZFZba3WyWR/pub?gid=0&single=true&output=csv"
+SHEET_URL = SHEET_URL
 
 KNOWN_COLS = {
     'id','name','category','community','lat','lon','coords_approximate',
