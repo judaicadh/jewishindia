@@ -98,7 +98,7 @@
   const sources = f.sources && f.sources.length
     ? `<p class="feature-sources"><strong>Sources:</strong> ${f.sources.join('; ')}</p>` : '';
 
-  // 3. Multi-viewer IIIF generator
+  // 3. Multi-viewer Clover IIIF Horizontal Slider
   const iiifHtml = manifests.length > 0 ? `
     <style>
       .iiif-slider {
@@ -145,6 +145,30 @@
         `).join("")}
       </div>
     </section>` : '';
+
+  // 4. Inject everything into the page
+  root.innerHTML = `
+    <p class="back-link"><a href="javascript:history.back()">← Back</a></p>
+    <h1>${f.name}</h1>
+    <div class="meta-line">${meta}</div>
+    <div class="chips chips-row">${communityChips(f)}</div>
+    ${desc}
+    ${f.address ? `<p class="feature-address"><strong>Address:</strong> ${f.address}${f.state?', '+f.state:''}</p>` : ''}
+    ${galleryHtml}
+    ${iiifHtml}
+    ${f.coords ? `<div id="mini-map" class="mini-map"></div>` : ''}
+    ${sources}
+  `;
+  
+  // 5. Initialize the mini-map (ALSO MISSING)
+  if (f.coords) {
+    const m = L.map('mini-map', { center: f.coords, zoom: 14, scrollWheelZoom: false });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd'
+    }).addTo(m);
+    L.marker(f.coords).addTo(m);
+  }
+})();
 </script>
 </body>
 </html>
