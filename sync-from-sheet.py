@@ -58,7 +58,7 @@ KNOWN_COLS = {
 }
 
 VALID_COMMUNITIES = {'Bene Israel','Baghdadi','Cochini','Kerala','Diaspora','Emerging'}
-VALID_CATEGORIES  = {'Synagogue','Cemetery','Education','Medical','Library','Mill','Civic','Trade and Business','Bollywood','Military','Other'}
+VALID_CATEGORIES = {'synagogue','cemetery','education','medical','library','mill','civic','trade and business','bollywood','military','other'}
 
 def slugify(s):
     s = re.sub(r"[^\w\s-]", "", s).strip().lower()
