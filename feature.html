@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Feature · Jewish India Digital Heritage Trail</title>
+<script src="https://www.unpkg.com/@samvera/clover-iiif@latest/dist/web-components/index.umd.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="assets/site.css">
+  
 </head>
 <body>
 
@@ -98,46 +100,51 @@
 
   // 3. Multi-viewer IIIF generator
   const iiifHtml = manifests.length > 0 ? `
+    <style>
+      .iiif-slider {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 1.5rem;
+        padding-bottom: 1rem;
+        scrollbar-width: thin; /* Firefox */
+      }
+      .iiif-slider::-webkit-scrollbar { height: 8px; }
+      .iiif-slider::-webkit-scrollbar-thumb { background: var(--border, #ccc); border-radius: 4px; }
+      .iiif-slide {
+        flex: 0 0 100%;
+        scroll-snap-align: center;
+        min-width: 0;
+      }
+      clover-viewer {
+        display: block;
+        height: 65vh;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fdfdfd;
+      }
+    </style>
+    
     <section class="iiif-section">
       <h2 class="iiif-heading">IIIF Collection${manifests.length > 1 ? 's' : ''}</h2>
-      ${manifests.map((manifestUrl, index) => `
-        <div class="iiif-embed" style="margin-bottom: 2.5rem;">
-          <iframe
-            src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}"
-            allowfullscreen
-            title="IIIF viewer ${index + 1} for ${f.name}"
-            style="width: 100%; height: 65vh; border: 1px solid var(--border); border-radius: 6px; background: #111;"
-          ></iframe>
-          <p class="iiif-links" style="margin-top: 0.5rem; font-size: 0.9em;">
-            <a href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" target="_blank" rel="noopener">Open Viewer ${manifests.length > 1 ? index + 1 : ''} in full screen ↗</a>
-            &ensp;·&ensp;
-            <a href="${manifestUrl}" target="_blank" rel="noopener">View manifest JSON ↗</a>
-          </p>
-        </div>
-      `).join("")}
+      ${manifests.length > 1 ? `<p style="font-size: 0.9em; color: var(--muted); margin-bottom: 1rem;">Swipe or scroll horizontally to view more collections →</p>` : ''}
+      
+      <div class="iiif-slider">
+        ${manifests.map((manifestUrl, index) => `
+          <div class="iiif-slide">
+            
+            <clover-viewer id="${manifestUrl}"></clover-viewer>
+            
+            <p class="iiif-links" style="margin-top: 0.75rem; font-size: 0.9em; text-align: center;">
+              <span style="color: var(--muted);">Viewer ${index + 1} of ${manifests.length}</span>
+              &ensp;·&ensp;
+              <a href="${manifestUrl}" target="_blank" rel="noopener">View manifest JSON ↗</a>
+            </p>
+          </div>
+        `).join("")}
+      </div>
     </section>` : '';
-
-  root.innerHTML = `
-    <p class="back-link"><a href="javascript:history.back()">← Back</a></p>
-    <h1>${f.name}</h1>
-    <div class="meta-line">${meta}</div>
-    <div class="chips chips-row">${communityChips(f)}</div>
-    ${desc}
-    ${f.address ? `<p class="feature-address"><strong>Address:</strong> ${f.address}${f.state?', '+f.state:''}</p>` : ''}
-    ${galleryHtml}
-    ${iiifHtml}
-    ${f.coords ? `<div id="mini-map" class="mini-map"></div>` : ''}
-    ${sources}
-  `;
-  
-  if (f.coords) {
-    const m = L.map('mini-map', { center: f.coords, zoom: 14, scrollWheelZoom: false });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd'
-    }).addTo(m);
-    L.marker(f.coords).addTo(m);
-  }
-})();
 </script>
 </body>
 </html>
