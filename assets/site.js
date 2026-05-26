@@ -10,17 +10,17 @@ const COMMUNITY_LABELS = {
 };
 
 const CATEGORY_LABELS = {
-  synagogue: "Synagogue",
-  cemetery: "Cemetery",
-  education: "Education",
-  medical: "Medical",
-  mill: "Mill",
-  library: "Library",
-  trade_and_buisness: "Trade and Business",
-  military: "Military",
-  bollywood: "Bollywood",
-  civic: "Civic",
-  other: "Other"
+  "synagogue": "Synagogue",
+  "cemetery": "Cemetery",
+  "education": "Education",
+  "medical": "Medical",
+  "library": "Library",
+  "mill": "Mill",
+  "civic": "Civic",
+  "trade and business": "Trade and Business",
+  "bollywood": "Bollywood",
+  "military": "Military",
+  "other": "Other"
 };
 
 // Load features from the inline data file (works from file:// — no fetch needed)
@@ -60,7 +60,14 @@ function communityChips(feature) {
 }
 
 function categoryLabel(feature) {
-  return CATEGORY_LABELS[feature.category] || feature.category || "Site";
+  // 1. Handle missing categories
+  if (!feature.category || feature.category.length === 0) return "Site";
+  
+  // 2. Ensure it's treated as an array (just in case some old data is still a string)
+  const cats = Array.isArray(feature.category) ? feature.category : [feature.category];
+  
+  // 3. Map each category to its human-readable label and join them with a comma
+  return cats.map(c => CATEGORY_LABELS[c] || c).join(" · ");
 }
 
 function eraText(feature) {
