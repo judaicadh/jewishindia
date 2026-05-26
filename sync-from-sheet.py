@@ -52,17 +52,16 @@ DATA_JSON = os.path.join(HERE, 'data', 'features.json')
 DATA_JS   = os.path.join(HERE, 'data', 'features.js')
 
 # Paste your published-CSV URL here (or pass on the command line)
-SHEET_URL = ""
+SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSyf6wTEAhfvZYlYKbMMNheC6h7_emAWtJ0gZ_PLCSRQtyNZoEqP1MVxLHECOilT8FK4uZFZba3WyWR/pub?gid=0&single=true&output=csv"
 
 KNOWN_COLS = {
     'id','name','category','community','lat','lon','coords_approximate',
-    'era_start','era_end','city','state','address','description',
+    'date_start','date_end','city','state','address','description',
     'image_folder','iiif_manifest','verified','sources'
 }
 
-VALID_COMMUNITIES = {'bene_israel','baghdadi','cochini','kerala','diaspora','emerging','civic'}
-VALID_CATEGORIES  = {'synagogue','cemetery','school','hospital','library','clock_tower',
-                     'garden','dock','mill','mill_site','district','chabad','civic','other'}
+VALID_COMMUNITIES = {'bene_israel','baghdadi','cochini','kerala','diaspora','emerging'}
+VALID_CATEGORIES  = {'synagogue','cemetery','school','hospital','library','mill', 'civic','other'}
 
 def slugify(s):
     s = re.sub(r"[^\w\s-]", "", s).strip().lower()
