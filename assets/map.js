@@ -213,7 +213,20 @@ function render() {
     if (!f.coords) return;
     if (!passesFilters(f)) return;
     const m = L.marker(f.coords, { icon: communityIcon(f.community) });
-    m.on('click', () => showDetail(f));
+    m.on('click', () => {
+    showDetail(f);
+    
+    // Update the browser URL quietly so it's ready to share
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.set('id', f.id);
+    
+    // Optional: clear lat/lng if they were there, since we are now focusing on an ID
+    newUrl.searchParams.delete('lat');
+    newUrl.searchParams.delete('lng');
+    newUrl.searchParams.delete('z');
+    
+    window.history.pushState({}, '', newUrl);
+  });
     LAYER.addLayer(m);
     MARKERS[f.id] = m;
     shown++;
@@ -333,8 +346,33 @@ function setupSidebarToggle() {
   render();
 
   // If url has community filter focused on Mumbai, zoom there
+  // --- URL ROUTING LOGIC ---
   const u = new URLSearchParams(location.search);
-  if (u.has("community") || u.has("category")) {
+
+  // 1. Zoom to a specific feature (e.g., ?id=haffkine-institute)
+  if (u.has("id")) {
+    const targetId = u.get("id");
+    const feature = ALL.find(f => f.id === targetId);
+    
+    if (feature && feature.coords) {
+      // Zoom close up to the feature
+      MAP.setView(feature.coords, 16); 
+      // Open the sidebar detail panel automatically
+      showDetail(feature); 
+    }
+  } 
+  // 2. Center on specific coordinates (e.g., ?lat=18.96&lng=72.83&z=14)
+  else if (u.has("lat") && u.has("lng")) {
+    const lat = parseFloat(u.get("lat"));
+    const lng = parseFloat(u.get("lng"));
+    const z = parseInt(u.get("z")) || 12; // Default to zoom 12 if 'z' is missing
+    
+    if (!isNaN(lat) && !isNaN(lng)) {
+      MAP.setView([lat, lng], z);
+    }
+  } 
+  // 3. Your existing logic: zoom to fit filtered communities/categories
+  else if (u.has("community") || u.has("category")) {
     const visibleCoords = ALL.filter(passesFilters).filter(f => f.coords).map(f => f.coords);
     if (visibleCoords.length > 1) {
       MAP.fitBounds(L.latLngBounds(visibleCoords).pad(0.1));
