@@ -81,16 +81,47 @@
   // 2. Smart Gallery logic (don't show "No images" if IIIF exists)
   let galleryHtml = '';
   if (f.images && f.images.length > 0) {
-    galleryHtml = `<div class="gallery-large">` +
-        f.images.map(img => `<img src="${imageUrl(f, img)}" alt="${f.name}" loading="lazy" onclick="openLightbox(this.src)">`).join("") +
-      `</div>`;
+    galleryHtml = `
+      <div class="camera-roll-wrapper" style="margin: 2rem 0;">
+        <h3 style="font-size: 0.85rem; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem;">Gallery</h3>
+        
+        <div class="camera-roll" style="
+          display: flex; 
+          gap: 12px; 
+          overflow-x: auto; 
+          padding-bottom: 12px; 
+          scroll-snap-type: x mandatory; 
+          scrollbar-width: thin;
+        ">
+          ${f.images.map(img => `
+            <img 
+              src="${imageUrl(f, img)}" 
+              alt="${f.name}" 
+              loading="lazy" 
+              onclick="openLightbox(this.src)"
+              style="
+                height: 180px; 
+                width: auto; 
+                max-width: 85vw; 
+                border-radius: 8px; 
+                cursor: zoom-in; 
+                scroll-snap-align: start; 
+                flex-shrink: 0; 
+                object-fit: cover; 
+                border: 1px solid var(--border, #ddd);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+              "
+            >
+          `).join("")}
+        </div>
+      </div>
+    `;
   } else if (manifests.length === 0) {
     galleryHtml = `<div class="empty-state">
          <div class="empty-peacock peacock-mark" aria-hidden="true"></div>
          <p>No images yet for this site.</p>
        </div>`;
   }
-
   const desc = f.description
     ? `<div class="feature-desc">${f.description}</div>`
     : `<div class="feature-desc-placeholder">Description not yet written. Edit <code>data/features.json</code> to add one.</div>`;
