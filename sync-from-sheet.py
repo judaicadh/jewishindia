@@ -48,9 +48,9 @@ except ImportError:
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_JSON = os.path.join(HERE, 'data', 'features.json')
 DATA_JS   = os.path.join(HERE, 'data', 'features.js')
-
+sheet = os.getenv('SHEET_URL')
 # Paste your published-CSV URL here (or pass on the command line)
-SHEET_URL = 'SHEET_URL'
+SHEET_URL = sheet
 
 KNOWN_COLS = {
     'id','name','category','community','lat','lon','coords_approximate',
