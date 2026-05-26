@@ -14,14 +14,13 @@ Sheet column layout (case-insensitive, extra columns ignored):
 
     id              short slug — auto-generated from `name` if blank (e.g. magen-david-synagogue)
     name            REQUIRED — display name of the site
-    category        synagogue | cemetery | school | hospital | library | mill | civic | other
+    category        comma-seperated: synagogue, cemetery, school, hospital, library, mill, civic, trade and business, other (one row can have multiple)
     community       comma-separated: bene_israel, baghdadi, cochini, kerala,
                     diaspora, emerging  (one row can have multiple)
-    lat             decimal latitude (e.g. 18.9669)   — leave blank if unknown
+    lat             decimal latitude (e.g. 18.9669)
     lon             decimal longitude (e.g. 72.8322)
-    coords_approximate  TRUE / FALSE  — flags city-level guesses
-    era_start       founding year (negative for BCE — e.g. -562)
-    era_end         year demolished/closed (blank if still standing)
+    date_start       founding year (negative for BCE — e.g. -562)
+    date_end         year demolished/closed (blank if still standing)
     city            e.g. Bombay
     state           e.g. Maharashtra
     address         freeform street address
@@ -59,7 +58,7 @@ KNOWN_COLS = {
 }
 
 VALID_COMMUNITIES = {'Bene Israel','Baghdadi','Cochini','Kerala','Diaspora','Emerging'}
-VALID_CATEGORIES  = {'Synagogue','Cemetery','School','Hospital','Library','Mill', 'Civic','Other'}
+VALID_CATEGORIES  = {'Synagogue','Cemetery','School','Hospital','Library','Mill','Civic','Trade and Business','Other'}
 
 def slugify(s):
     s = re.sub(r"[^\w\s-]", "", s).strip().lower()
@@ -106,7 +105,7 @@ def row_to_feature(row, existing_by_id):
     feat = {
         'id': fid,
         'name': name,
-        'category': row.get('category', 'other').lower() or 'other',
+        'category': [c.lower() for c in parse_list(row.get('category')) if c.lower() in VALID_CATEGORIES],
         'community': [c.lower() for c in parse_list(row.get('community')) if c.lower() in VALID_COMMUNITIES],
         'coords': coords,
         'date_start': parse_int(row.get('date_start')),
