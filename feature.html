@@ -61,43 +61,60 @@
     root.innerHTML = `<h1>Not found</h1><p>No feature with id <code>${id}</code>. <a href="map.html">Back to map</a>.</p>`;
     return;
   }
+  
   document.title = `${f.name} · Jewish India Digital Heritage Trail`;
+  
   const meta = [
     categoryLabel(f),
     eraText(f),
     f.city || f.region,
     f.coords_approximate ? '· coords approximate' : ''
   ].filter(Boolean).join(' · ');
-  const galleryHtml = (f.images && f.images.length)
-    ? `<div class="gallery-large">` +
+
+  // 1. Array-safe manifest check
+  const manifests = Array.isArray(f.iiif_manifest) 
+    ? f.iiif_manifest 
+    : (f.iiif_manifest ? [f.iiif_manifest] : []);
+
+  // 2. Smart Gallery logic (don't show "No images" if IIIF exists)
+  let galleryHtml = '';
+  if (f.images && f.images.length > 0) {
+    galleryHtml = `<div class="gallery-large">` +
         f.images.map(img => `<img src="${imageUrl(f, img)}" alt="${f.name}" loading="lazy" onclick="openLightbox(this.src)">`).join("") +
-      `</div>`
-    : `<div class="empty-state">
+      `</div>`;
+  } else if (manifests.length === 0) {
+    galleryHtml = `<div class="empty-state">
          <div class="empty-peacock peacock-mark" aria-hidden="true"></div>
          <p>No images yet for this site.</p>
        </div>`;
+  }
+
   const desc = f.description
     ? `<div class="feature-desc">${f.description}</div>`
     : `<div class="feature-desc-placeholder">Description not yet written. Edit <code>data/features.json</code> to add one.</div>`;
+    
   const sources = f.sources && f.sources.length
     ? `<p class="feature-sources"><strong>Sources:</strong> ${f.sources.join('; ')}</p>` : '';
 
-  // IIIF viewer — rendered only when a manifest URL is present
-  const iiifHtml = f.iiif_manifest ? `
+  // 3. Multi-viewer IIIF generator
+  const iiifHtml = manifests.length > 0 ? `
     <section class="iiif-section">
-      <h2 class="iiif-heading">IIIF Collection</h2>
-      <div class="iiif-embed">
-        <iframe
-          src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}"
-          allowfullscreen
-          title="IIIF viewer for ${f.name}">
-        </iframe>
-      </div>
-      <p class="iiif-links">
-        <a href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}" target="_blank" rel="noopener">Open in Universal Viewer ↗</a>
-        &ensp;·&ensp;
-        <a href="${f.iiif_manifest}" target="_blank" rel="noopener">View manifest JSON ↗</a>
-      </p>
+      <h2 class="iiif-heading">IIIF Collection${manifests.length > 1 ? 's' : ''}</h2>
+      ${manifests.map((manifestUrl, index) => `
+        <div class="iiif-embed" style="margin-bottom: 2.5rem;">
+          <iframe
+            src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}"
+            allowfullscreen
+            title="IIIF viewer ${index + 1} for ${f.name}"
+            style="width: 100%; height: 65vh; border: 1px solid var(--border); border-radius: 6px; background: #111;"
+          ></iframe>
+          <p class="iiif-links" style="margin-top: 0.5rem; font-size: 0.9em;">
+            <a href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" target="_blank" rel="noopener">Open Viewer ${manifests.length > 1 ? index + 1 : ''} in full screen ↗</a>
+            &ensp;·&ensp;
+            <a href="${manifestUrl}" target="_blank" rel="noopener">View manifest JSON ↗</a>
+          </p>
+        </div>
+      `).join("")}
     </section>` : '';
 
   root.innerHTML = `
@@ -112,6 +129,7 @@
     ${f.coords ? `<div id="mini-map" class="mini-map"></div>` : ''}
     ${sources}
   `;
+  
   if (f.coords) {
     const m = L.map('mini-map', { center: f.coords, zoom: 14, scrollWheelZoom: false });
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
