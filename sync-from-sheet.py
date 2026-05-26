@@ -27,7 +27,7 @@ Sheet column layout (case-insensitive, extra columns ignored):
     description     freeform paragraph
     image_folder    name of the folder under /Images that holds the photos
                     (e.g. "Magen David Synagogue")
-    iiif_manifest   URL to a IIIF manifest, if you have one
+    iiif_manifest   comma-seperated list of  IIIF manifests
     verified        TRUE / FALSE — set TRUE once a human has reviewed the row
     sources         comma-separated list of where the data came from
 
@@ -115,7 +115,7 @@ def row_to_feature(row, existing_by_id):
         'address': row.get('address') or None,
         'description': row.get('description') or '',
         'image_folder': row.get('image_folder') or None,
-        'iiif_manifest': row.get('iiif_manifest') or None,
+        'iiif_manifest': parse_list(row.get('iiif_manifest')),
         'verified': truthy(row.get('verified')),
         'sources': parse_list(row.get('sources')) or ['Google Sheet'],
     }
