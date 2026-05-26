@@ -241,24 +241,29 @@ function showDetail(f) {
   // 1. Smart Media Handling
   let mediaHtml = '';
 
-  if (f.iiif_manifest) {
-    // If a IIIF manifest exists, embed a viewer directly in the sidebar
-    // and do NOT show the "No images yet" placeholder.
-    mediaHtml = `
+  // Safely ensure manifests is an array (handles old string data gracefully just in case)
+  const manifests = Array.isArray(f.iiif_manifest) 
+    ? f.iiif_manifest 
+    : (f.iiif_manifest ? [f.iiif_manifest] : []);
+
+  if (manifests.length > 0) {
+    // Loop through every manifest and generate an iframe for it
+    mediaHtml = manifests.map((manifestUrl, index) => `
       <div class="iiif-container" style="margin: 1rem 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #111;">
         <iframe 
-          src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}" 
+          src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" 
           width="100%" 
           height="320px" 
           frameborder="0" 
           allowfullscreen
-          title="IIIF Document Viewer">
+          title="IIIF Document Viewer ${index + 1}">
         </iframe>
       </div>
-      <a class="full-link" style="font-size: 0.85em; margin-bottom: 1rem; display: inline-block;" href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}" target="_blank" rel="noopener">
-        Open Viewer in full screen ↗
+      <a class="full-link" style="font-size: 0.85em; margin-bottom: 1rem; display: inline-block;" href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" target="_blank" rel="noopener">
+        Open Viewer ${manifests.length > 1 ? index + 1 : ''} in full screen ↗
       </a>
-    `;
+    `).join("");
+
   } else if (f.images && f.images.length > 0) {
     // If no IIIF, but local images exist, show the standard gallery
     const imgs = f.images.slice(0, 6);
