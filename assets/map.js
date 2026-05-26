@@ -224,36 +224,65 @@ function render() {
 
 function showDetail(f) {
   const panel = document.getElementById('detail');
-  const imgs = (f.images || []).slice(0, 6);
-  const galleryHtml = imgs.length
-    ? `<div class="gallery">` +
+  
+  // 1. Smart Media Handling
+  let mediaHtml = '';
+
+  if (f.iiif_manifest) {
+    // If a IIIF manifest exists, embed a viewer directly in the sidebar
+    // and do NOT show the "No images yet" placeholder.
+    mediaHtml = `
+      <div class="iiif-container" style="margin: 1rem 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #111;">
+        <iframe 
+          src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}" 
+          width="100%" 
+          height="320px" 
+          frameborder="0" 
+          allowfullscreen
+          title="IIIF Document Viewer">
+        </iframe>
+      </div>
+      <a class="full-link" style="font-size: 0.85em; margin-bottom: 1rem; display: inline-block;" href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}" target="_blank" rel="noopener">
+        Open Viewer in full screen ↗
+      </a>
+    `;
+  } else if (f.images && f.images.length > 0) {
+    // If no IIIF, but local images exist, show the standard gallery
+    const imgs = f.images.slice(0, 6);
+    mediaHtml = `<div class="gallery">` +
         imgs.map(img => `<img src="${imageUrl(f, img)}" alt="${f.name}" loading="lazy" onclick="openLightbox(this.src)">`).join("") +
         (f.images.length > 6 ? `<div class="more">+${f.images.length - 6} more</div>` : '') +
-      `</div>`
-    : `<div class="no-images">No images yet</div>`;
+      `</div>`;
+  } else {
+    // Only show this placeholder if NEITHER exist
+    mediaHtml = `<div class="no-images">No images yet</div>`;
+  }
+
+  // 2. Build the rest of the text
   const desc = f.description
     ? `<div class="description">${f.description}</div>`
     : `<div class="description placeholder">Description not yet written.</div>`;
+    
   const meta = [
     categoryLabel(f),
     eraText(f),
     f.city || f.region,
     f.coords_approximate ? '· coords approximate' : ''
   ].filter(Boolean).join(' · ');
+
+  // 3. Render the panel
   panel.innerHTML = `
     <div class="panel-content">
       <h2>${f.name}</h2>
       <div class="meta-line">${meta}</div>
       <div class="chips chips-row">${communityChips(f)}</div>
-      ${galleryHtml}
+      ${mediaHtml}
       ${desc}
       ${f.address ? `<div class="panel-address"><strong>Address:</strong> ${f.address}</div>` : ''}
-      ${f.iiif_manifest ? `<a class="iiif-panel-link" href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}" target="_blank" rel="noopener">View IIIF collection ↗</a>` : ''}
       <a class="full-link" href="feature.html?id=${encodeURIComponent(f.id)}">View full page →</a>
     </div>
   `;
 }
-
 function setupSidebarToggle() {
   const layout  = document.querySelector('.map-layout');
   const toggle  = document.getElementById('sidebar-toggle');
