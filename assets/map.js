@@ -211,20 +211,12 @@ function render() {
     if (!f.coords) return;
     if (!passesFilters(f)) return;
     const m = L.marker(f.coords, { icon: communityIcon(f.community) });
+    
+    // THIS IS CORRECT: Click only shows detail, URL is not updated here.
     m.on('click', () => {
-    showDetail(f);
+      showDetail(f);
+    });
     
-    // Update the browser URL quietly so it's ready to share
-    const newUrl = new URL(window.location);
-    newUrl.searchParams.set('id', f.id);
-    
-    // Clear lat/lng if they were there, since we are now focusing on an ID
-    newUrl.searchParams.delete('lat');
-    newUrl.searchParams.delete('lng');
-    newUrl.searchParams.delete('z');
-    
-    window.history.pushState({}, '', newUrl);
-  });
     LAYER.addLayer(m);
     MARKERS[f.id] = m;
     shown++;
@@ -313,6 +305,9 @@ function showDetail(f) {
     f.coords_approximate ? '· coords approximate' : ''
   ].filter(Boolean).join(' · ');
 
+  // Generate the absolute URL for the permalink
+  const permalinkUrl = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(f.id)}`;
+
   // 3. Render the panel
   panel.innerHTML = `
     <div class="panel-content">
@@ -322,6 +317,19 @@ function showDetail(f) {
       ${mediaHtml}
       ${desc}
       ${f.address ? `<div class="panel-address"><strong>Address:</strong> ${f.address}</div>` : ''}
+      
+      <div style="margin: 1.5rem 0 1rem 0; padding: 0.75rem; background: var(--bg-alt, #f4f4f4); border-radius: 6px;">
+        <label style="display: block; font-size: 0.8em; font-weight: 600; margin-bottom: 0.3rem; color: var(--muted, #666); text-transform: uppercase; letter-spacing: 0.5px;">Map Permalink</label>
+        <input 
+          type="text" 
+          readonly 
+          value="${permalinkUrl}" 
+          onclick="this.select(); navigator.clipboard.writeText(this.value);" 
+          style="width: 100%; padding: 0.5rem; border: 1px solid var(--border, #ccc); border-radius: 4px; background: #fff; color: #333; cursor: copy; font-family: monospace; font-size: 0.85em;"
+          title="Click to copy to clipboard"
+        >
+      </div>
+
       <a class="full-link" href="feature.html?id=${encodeURIComponent(f.id)}">View full page →</a>
     </div>
   `;
@@ -382,21 +390,20 @@ function setupSidebarToggle() {
   setTimeout(() => isMapReady = true, 1000);
 
   MAP.on('moveend', () => {
-    // Skip if the map is just doing its initial automated load/zoom
     if (!isMapReady) return;
 
     const currentUrl = new URL(window.location);
     const center = MAP.getCenter();
     const zoom = MAP.getZoom();
     
-    // The user has moved the map. Drop the specific feature ID and track coordinates instead.
-    currentUrl.searchParams.delete('id');
-    
+    // Always track the viewport
     currentUrl.searchParams.set('lat', center.lat.toFixed(4));
     currentUrl.searchParams.set('lng', center.lng.toFixed(4));
     currentUrl.searchParams.set('z', zoom);
     
-    // Update the URL quietly
+    // Drop the ID so the URL strictly represents the geographic view
+    currentUrl.searchParams.delete('id');
+    
     window.history.replaceState({}, '', currentUrl);
   });
 
