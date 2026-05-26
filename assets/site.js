@@ -2,7 +2,7 @@
 
 const COMMUNITY_LABELS = {
   bene_israel: "Bene Israel",
-  baghdadi: "Baghdadi (incl. Sassoon)",
+  baghdadi: "Baghdadi",
   cochini: "Cochini / Malabar",
   kerala: "Jews of Kerala",
   diaspora: "Indian Jewish Diaspora",
@@ -12,17 +12,14 @@ const COMMUNITY_LABELS = {
 const CATEGORY_LABELS = {
   synagogue: "Synagogue",
   cemetery: "Cemetery",
-  school: "School",
-  hospital: "Hospital",
-  library: "Library",
-  clock_tower: "Clock Tower",
-  garden: "Garden",
-  dock: "Dock",
+  education: "Education",
+  medical: "Medical",
   mill: "Mill",
-  mill_site: "Mill Site",
-  district: "District",
-  chabad: "Chabad House",
-  civic: "Civic / Heritage",
+  library: "Library",
+  trade_and_buisness: "Trade and Business",
+  military: "Military"
+  bollywood: "Chabad House",
+  civic: "Civic",
   other: "Other"
 };
 
