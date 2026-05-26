@@ -53,16 +53,17 @@ function buildFilters() {
   `).join("");
 
   // Categories — derive from data
-  const cats = [...new Set(ALL.map(f => f.category))].sort();
+  const allCats = ALL.flatMap(f => f.category || []);
+  const cats = [...new Set(allCats)].sort();
+  
   const catEl = document.getElementById("category-filters");
   catEl.innerHTML = `<label><input type="checkbox" id="all-categories" ${state.categories.size === 0 ? 'checked' : ''}> All</label>` +
     cats.map(c => `
       <label>
         <input type="checkbox" data-category="${c}" ${state.categories.size === 0 || state.categories.has(c) ? 'checked' : ''}>
-        ${CATEGORY_LABELS[c] || c}
+        ${(typeof CATEGORY_LABELS !== 'undefined' && CATEGORY_LABELS[c]) || c}
       </label>
     `).join("");
-
   // Regions — top cities
   const regions = {};
   ALL.forEach(f => {
