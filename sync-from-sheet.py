@@ -14,9 +14,7 @@ Sheet column layout (case-insensitive, extra columns ignored):
 
     id              short slug — auto-generated from `name` if blank (e.g. magen-david-synagogue)
     name            REQUIRED — display name of the site
-    category        synagogue | cemetery | school | hospital | library |
-                    clock_tower | garden | dock | mill | mill_site |
-                    district | chabad | civic | other
+    category        synagogue | cemetery | school | hospital | library | mill | civic | other
     community       comma-separated: bene_israel, baghdadi, cochini, kerala,
                     diaspora, emerging  (one row can have multiple)
     lat             decimal latitude (e.g. 18.9669)   — leave blank if unknown
@@ -52,7 +50,7 @@ DATA_JSON = os.path.join(HERE, 'data', 'features.json')
 DATA_JS   = os.path.join(HERE, 'data', 'features.js')
 
 # Paste your published-CSV URL here (or pass on the command line)
-SHEET_URL = SHEET_URL
+SHEET_URL = 'SHEET_URL'
 
 KNOWN_COLS = {
     'id','name','category','community','lat','lon','coords_approximate',
