@@ -139,8 +139,6 @@ def row_to_feature(row, existing_by_id):
     if extras:
         feat['extras'] = extras
 
-    if feat['category'] not in VALID_CATEGORIES:
-        print(f"  warn: unknown category {feat['category']!r} on {name}")
 
     return feat
 
