@@ -4,7 +4,7 @@ A static website mapping synagogues, cemeteries, schools, mills, and civic landm
 
 ## What's included
 
-- **102 features** across India: 28 Bombay/Deccan sites with images, 32 synagogues from across India/Pakistan/Burma, and 42 cemeteries from the Isaac Solomon survey.
+- **Features** Places across India including synagogues, cemeteries, and educational institutions.
 - **Interactive map** with community layer toggles, timeline filter (ancient era to present), category and region filters.
 - **Themed pages**: Synagogues, Cemeteries, Sassoon Mills, plus per-feature detail pages.
 - **Self-contained, no build step** — just static HTML, CSS, and JS plus one `data/features.json` file.
