@@ -84,7 +84,7 @@ Use any combination of: `bene_israel`, `baghdadi`, `cochini`, `kerala`, `diaspor
 
 ### Categories
 
-Used for filtering and the listing pages: `synagogue`, `cemetery`, `school`, `hospital`, `library`, `clock_tower`, `garden`, `dock`, `mill`, `mill_site`, `district`, `chabad`, `civic`, `other`.
+Used for filtering and the listing pages: `synagogue`, `cemetery`, `education`, `hospital`, `library`, `military`, `mill`, `civic`, `other`.
 
 ## Hosting
 
