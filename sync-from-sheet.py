@@ -181,18 +181,6 @@ def normalize_value(s):
     s = re.sub(r"[^\w\s]", ' ', s)
     s = re.sub(r"\s+", ' ', s).strip()
     return s
-sheet = os.getenv('SHEET_URL')
-# Paste your published-CSV URL here (or pass on the command line)
-SHEET_URL = sheet
-
-KNOWN_COLS = {
-    'id','name','category','community','lat','lon',
-    'date_start','date_end','city','state','address','description',
-    'image_folder','iiif_manifest','verified','sources'
-}
-
-VALID_COMMUNITIES = {'bene_israel','baghdadi','cochini','kerala','diaspora','emerging'}
-VALID_CATEGORIES = {'synagogue','cemetery','education','medical','library','mill','civic','trade_and_business','bollywood','military','other'}
 
 def slugify(s):
     s = re.sub(r"[^\w\s-]", "", s).strip().lower()
@@ -292,29 +280,10 @@ def row_to_feature(row, existing_by_id):
         'iiif_manifest': normed.get('iiif_manifest') or None,
         'verified': truthy(normed.get('verified')),
         'sources': parse_list(normed.get('sources')) or ['Google Sheet'],
-        'category': [c.lower() for c in parse_list(row.get('category')) if c.lower() in VALID_CATEGORIES],
-        'community': [c.lower() for c in parse_list(row.get('community')) if c.lower() in VALID_COMMUNITIES],
-        'coords': coords,
-        'date_start': parse_int(row.get('date_start')),
-        'date_end':   parse_int(row.get('date_end')),
-        'city':  row.get('city') or None,
-        'state': row.get('state') or None,
-        'address': row.get('address') or None,
-        'description': row.get('description') or '',
-        'image_folder': row.get('image_folder') or None,
-        'iiif_manifest': parse_list(row.get('iiif_manifest')),
-        'verified': truthy(row.get('verified')),
-        'sources': parse_list(row.get('sources')) or ['Google Sheet'],
     }
     if feat['image_folder']:
         feat['image_dir'] = f"../{feat['image_folder']}"
-    for cat in feat['category']:
-        if cat not in VALID_CATEGORIES:
-            print(f"  warn: unknown category {cat!r} on {name}")
 
-   
-    # Carry over auto-generated image lists from the existing features.json
-    # (so the sheet doesn't need to know about images on disk)
     prev = existing_by_id.get(fid)
     if prev:
         for k in ('images','tiff_archive','image_dir','image_dir_converted','converted_images'):
@@ -327,7 +296,6 @@ def row_to_feature(row, existing_by_id):
     if 'text_uploaded'  in normed:   extras['text_uploaded']  = truthy(normed['text_uploaded'])
     if extras:
         feat['extras'] = extras
-
 
     return feat
 
