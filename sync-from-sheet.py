@@ -57,7 +57,7 @@ DATA_JS   = os.path.join(HERE, 'data', 'features.js')
 # Paste your published-CSV URL here (or pass on the command line, or
 # set the SHEET_URL environment variable, which is what the GitHub
 # Action does via a repository secret).
-SHEET_URL = ""
+SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSyf6wTEAhfvZYlYKbMMNheC6h7_emAWtJ0gZ_PLCSRQtyNZoEqP1MVxLHECOilT8FK4uZFZba3WyWR/pub?output=csv"
 
 # Map sheet column headers -> internal field name (lowercased, _/- as space)
 COLUMN_ALIASES = {
