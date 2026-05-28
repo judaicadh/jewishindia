@@ -38,7 +38,25 @@ jobs:
       - name: Sync data from Google Sheet
         env:
           SHEET_URL: ${{ secrets.SHEET_URL }}
-        run: python sync-from-sheet.py "$SHEET_URL"
+        run: |
+          if [ -z "$SHEET_URL" ]; then
+            echo "::error::SHEET_URL secret is not set. Add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          python sync-from-sheet.py "$SHEET_URL"
+
+      - name: Verify sync produced data
+        run: |
+          if [ ! -s data/features.json ]; then
+            echo "::error::data/features.json is missing or empty after sync."
+            exit 1
+          fi
+          COUNT=$(python -c "import json; print(len(json.load(open('data/features.json'))['features']))")
+          echo "Synced $COUNT features."
+          if [ "$COUNT" -lt 1 ]; then
+            echo "::error::Sync produced 0 features — check your sheet columns and the SHEET_URL secret."
+            exit 1
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
