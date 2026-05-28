@@ -2,7 +2,7 @@
 
 const COMMUNITY_LABELS = {
   bene_israel: "Bene Israel",
-  baghdadi: "Baghdadi (incl. Sassoon)",
+  baghdadi: "Baghdadi",
   cochini: "Cochini / Malabar",
   kerala: "Jews of Kerala",
   diaspora: "Indian Jewish Diaspora",
@@ -10,20 +10,17 @@ const COMMUNITY_LABELS = {
 };
 
 const CATEGORY_LABELS = {
-  synagogue: "Synagogue",
-  cemetery: "Cemetery",
-  school: "School",
-  hospital: "Hospital",
-  library: "Library",
-  clock_tower: "Clock Tower",
-  garden: "Garden",
-  dock: "Dock",
-  mill: "Mill",
-  mill_site: "Mill Site",
-  district: "District",
-  chabad: "Chabad House",
-  civic: "Civic / Heritage",
-  other: "Other"
+  "synagogue": "Synagogue",
+  "cemetery": "Cemetery",
+  "education": "Education",
+  "medical": "Medical",
+  "library": "Library",
+  "mill": "Mill",
+  "civic": "Civic",
+  "trade_and_business": "Trade and Business",
+  "bollywood": "Bollywood",
+  "military": "Military",
+  "other": "Other"
 };
 
 // ─── Live Google Sheet fetch ──────────────────────────────────────────────────
@@ -230,19 +227,31 @@ function firstImage(feature) {
 }
 
 function communityChips(feature) {
-  return (feature.community || [])
-    .filter(c => COMMUNITY_LABELS[c])  // hide internal-only tags like "civic"
+  // Ensure we are working with an array, even if data is missing
+  const communities = Array.isArray(feature.community) 
+    ? feature.community 
+    : (feature.community ? [feature.community] : []);
+
+  return communities
+    .filter(c => COMMUNITY_LABELS[c]) // Only show valid, labeled communities
     .map(c => `<span class="chip ${c}">${COMMUNITY_LABELS[c]}</span>`)
     .join("");
 }
 
 function categoryLabel(feature) {
-  return CATEGORY_LABELS[feature.category] || feature.category || "Site";
+  // 1. Handle missing categories
+  if (!feature.category || feature.category.length === 0) return "Site";
+  
+  // 2. Ensure it's treated as an array (just in case some old data is still a string)
+  const cats = Array.isArray(feature.category) ? feature.category : [feature.category];
+  
+  // 3. Map each category to its human-readable label and join them with a comma
+  return cats.map(c => CATEGORY_LABELS[c] || c).join(" · ");
 }
 
 function eraText(feature) {
-  if (feature.era_start && feature.era_end) return `${feature.era_start}–${feature.era_end}`;
-  if (feature.era_start) return `est. ${feature.era_start}`;
+  if (feature.date_start && feature.date_end) return `${feature.date_start}–${feature.date_end}`;
+  if (feature.date_start) return `est. ${feature.date_start}`;
   return "Date unknown";
 }
 

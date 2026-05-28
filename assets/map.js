@@ -53,16 +53,18 @@ function buildFilters() {
   `).join("");
 
   // Categories — derive from data
-  const cats = [...new Set(ALL.map(f => f.category))].sort();
+  const allCats = ALL.flatMap(f => f.category || []);
+  const cats = [...new Set(allCats)].sort();
+  
   const catEl = document.getElementById("category-filters");
   catEl.innerHTML = `<label><input type="checkbox" id="all-categories" ${state.categories.size === 0 ? 'checked' : ''}> All</label>` +
     cats.map(c => `
       <label>
         <input type="checkbox" data-category="${c}" ${state.categories.size === 0 || state.categories.has(c) ? 'checked' : ''}>
-        ${CATEGORY_LABELS[c] || c}
+        ${(typeof CATEGORY_LABELS !== 'undefined' && CATEGORY_LABELS[c]) || c}
       </label>
     `).join("");
-
+    
   // Regions — top cities
   const regions = {};
   ALL.forEach(f => {
@@ -168,29 +170,35 @@ function updateTimelineLabels() {
 }
 
 function passesFilters(f) {
-  // Community: must intersect
+  // Community: must intersect (your existing logic)
   if (state.communities.size > 0) {
     const cs = (f.community || []).filter(c => COMMUNITY_COLORS[c]);
-    if (cs.length === 0) {
-      // Site has no recognised community (e.g. only "civic") — keep it visible
-      // since it's a shared / civic site rather than a community-specific one.
-    } else if (!cs.some(c => state.communities.has(c))) {
+    if (cs.length > 0 && !cs.some(c => state.communities.has(c))) {
       return false;
     }
   }
-  // Category
-  if (state.categories.size > 0 && !state.categories.has(f.category)) return false;
-  // Region
+
+  // FIXED: Category logic for Lists
+  if (state.categories.size > 0) {
+    // Check if at least one of the site's categories is in the selected filters
+    const siteCategories = f.category || [];
+    const hasMatch = siteCategories.some(cat => state.categories.has(cat));
+    if (!hasMatch) return false;
+  }
+
+  // Region & Timeline (your existing logic)
   if (state.regions.size > 0) {
     const r = f.city || f.region || 'Unknown';
     if (!state.regions.has(r)) return false;
   }
-  // Timeline
-  if (f.era_start == null) {
+  
+  // Use date_start from your features.json (check if it exists)
+  if (f.date_start == null) {
     if (!state.showUndated) return false;
   } else {
-    if (f.era_start < state.yearMin || f.era_start > state.yearMax) return false;
+    if (f.date_start < state.yearMin || f.date_start > state.yearMax) return false;
   }
+  
   return true;
 }
 
@@ -203,7 +211,12 @@ function render() {
     if (!f.coords) return;
     if (!passesFilters(f)) return;
     const m = L.marker(f.coords, { icon: communityIcon(f.community) });
-    m.on('click', () => showDetail(f));
+    
+    // THIS IS CORRECT: Click only shows detail, URL is not updated here.
+    m.on('click', () => {
+      showDetail(f);
+    });
+    
     LAYER.addLayer(m);
     MARKERS[f.id] = m;
     shown++;
@@ -214,31 +227,109 @@ function render() {
 
 function showDetail(f) {
   const panel = document.getElementById('detail');
-  const imgs = (f.images || []).slice(0, 6);
-  const galleryHtml = imgs.length
-    ? `<div class="gallery">` +
+  
+  // 1. Smart Media Handling
+  let mediaHtml = '';
+
+  // Safely ensure manifests is an array
+  const manifests = Array.isArray(f.iiif_manifest) 
+    ? f.iiif_manifest 
+    : (f.iiif_manifest ? [f.iiif_manifest] : []);
+
+  if (manifests.length > 0) {
+    // Multi-viewer Horizontal Slider (same logic as feature.html)
+    mediaHtml = `
+      <style>
+        .sidebar-iiif-slider {
+          display: flex;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          gap: 1rem;
+          padding-bottom: 0.5rem;
+          scrollbar-width: thin;
+        }
+        .sidebar-iiif-slider::-webkit-scrollbar { height: 6px; }
+        .sidebar-iiif-slider::-webkit-scrollbar-thumb { background: var(--border, #ccc); border-radius: 4px; }
+        .sidebar-iiif-slide {
+          flex: 0 0 100%;
+          scroll-snap-align: center;
+          min-width: 0;
+        }
+      </style>
+      <div style="margin: 1rem 0;">
+        ${manifests.length > 1 ? `<p style="font-size: 0.8em; color: var(--muted); margin-bottom: 0.5rem;">Swipe to view ${manifests.length} collections →</p>` : ''}
+        <div class="sidebar-iiif-slider">
+          ${manifests.map((manifestUrl, index) => `
+            <div class="sidebar-iiif-slide">
+              <div style="border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #111;">
+                <iframe 
+                  src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" 
+                  width="100%" 
+                  height="280px" 
+                  frameborder="0" 
+                  allowfullscreen
+                  title="IIIF Document Viewer ${index + 1}">
+                </iframe>
+              </div>
+              <p style="margin-top: 0.5rem; font-size: 0.8em; text-align: center;">
+                <a class="full-link" href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" target="_blank" rel="noopener">
+                  Open Viewer ${manifests.length > 1 ? index + 1 : ''} full screen ↗
+                </a>
+              </p>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  } else if (f.images && f.images.length > 0) {
+    // If no IIIF, but local images exist, show the standard gallery
+    const imgs = f.images.slice(0, 6);
+    mediaHtml = `<div class="gallery">` +
         imgs.map(img => `<img src="${imageUrl(f, img)}" alt="${f.name}" loading="lazy" onclick="openLightbox(this.src)">`).join("") +
         (f.images.length > 6 ? `<div class="more">+${f.images.length - 6} more</div>` : '') +
-      `</div>`
-    : `<div class="no-images">No images yet</div>`;
+      `</div>`;
+  } else {
+    // Only show this placeholder if NEITHER exist
+    mediaHtml = `<div class="no-images">No images yet</div>`;
+  }
+
+  // 2. Build the rest of the text
   const desc = f.description
     ? `<div class="description">${f.description}</div>`
     : `<div class="description placeholder">Description not yet written.</div>`;
+    
   const meta = [
     categoryLabel(f),
     eraText(f),
     f.city || f.region,
     f.coords_approximate ? '· coords approximate' : ''
   ].filter(Boolean).join(' · ');
+
+  // Generate the absolute URL for the permalink
+  const permalinkUrl = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(f.id)}`;
+
+  // 3. Render the panel
   panel.innerHTML = `
     <div class="panel-content">
       <h2>${f.name}</h2>
       <div class="meta-line">${meta}</div>
       <div class="chips chips-row">${communityChips(f)}</div>
-      ${galleryHtml}
+      ${mediaHtml}
       ${desc}
       ${f.address ? `<div class="panel-address"><strong>Address:</strong> ${f.address}</div>` : ''}
-      ${f.iiif_manifest ? `<a class="iiif-panel-link" href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}" target="_blank" rel="noopener">View IIIF collection ↗</a>` : ''}
+      
+      <div style="margin: 1.5rem 0 1rem 0; padding: 0.75rem; background: var(--bg-alt, #f4f4f4); border-radius: 6px;">
+        <label style="display: block; font-size: 0.8em; font-weight: 600; margin-bottom: 0.3rem; color: var(--muted, #666); text-transform: uppercase; letter-spacing: 0.5px;">Map Permalink</label>
+        <input 
+          type="text" 
+          readonly 
+          value="${permalinkUrl}" 
+          onclick="this.select(); navigator.clipboard.writeText(this.value);" 
+          style="width: 100%; padding: 0.5rem; border: 1px solid var(--border, #ccc); border-radius: 4px; background: #fff; color: #333; cursor: copy; font-family: monospace; font-size: 0.85em;"
+          title="Click to copy to clipboard"
+        >
+      </div>
+
       <a class="full-link" href="feature.html?id=${encodeURIComponent(f.id)}">View full page →</a>
     </div>
   `;
@@ -293,9 +384,56 @@ function setupSidebarToggle() {
   setupSidebarToggle();
   render();
 
-  // If url has community filter focused on Mumbai, zoom there
+  // --- DYNAMIC VIEWPORT SYNC ---
+  // Allow initial page load animations (like fitBounds) to finish before tracking movement
+  let isMapReady = false;
+  setTimeout(() => isMapReady = true, 1000);
+
+  MAP.on('moveend', () => {
+    if (!isMapReady) return;
+
+    const currentUrl = new URL(window.location);
+    const center = MAP.getCenter();
+    const zoom = MAP.getZoom();
+    
+    // Always track the viewport
+    currentUrl.searchParams.set('lat', center.lat.toFixed(4));
+    currentUrl.searchParams.set('lng', center.lng.toFixed(4));
+    currentUrl.searchParams.set('z', zoom);
+    
+    // Drop the ID so the URL strictly represents the geographic view
+    currentUrl.searchParams.delete('id');
+    
+    window.history.replaceState({}, '', currentUrl);
+  });
+
+  // --- URL ROUTING LOGIC ---
   const u = new URLSearchParams(location.search);
-  if (u.has("community") || u.has("category")) {
+
+  // 1. Zoom to a specific feature (e.g., ?id=haffkine-institute)
+  if (u.has("id")) {
+    const targetId = u.get("id");
+    const feature = ALL.find(f => f.id === targetId);
+    
+    if (feature && feature.coords) {
+      // Zoom close up to the feature
+      MAP.setView(feature.coords, 16); 
+      // Open the sidebar detail panel automatically
+      showDetail(feature); 
+    }
+  } 
+  // 2. Center on specific coordinates (e.g., ?lat=18.96&lng=72.83&z=14)
+  else if (u.has("lat") && u.has("lng")) {
+    const lat = parseFloat(u.get("lat"));
+    const lng = parseFloat(u.get("lng"));
+    const z = parseInt(u.get("z")) || 12; // Default to zoom 12 if 'z' is missing
+    
+    if (!isNaN(lat) && !isNaN(lng)) {
+      MAP.setView([lat, lng], z);
+    }
+  } 
+  // 3. Your existing logic: zoom to fit filtered communities/categories
+  else if (u.has("community") || u.has("category")) {
     const visibleCoords = ALL.filter(passesFilters).filter(f => f.coords).map(f => f.coords);
     if (visibleCoords.length > 1) {
       MAP.fitBounds(L.latLngBounds(visibleCoords).pad(0.1));

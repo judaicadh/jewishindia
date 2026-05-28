@@ -74,7 +74,9 @@
 (async function() {
   setActiveNav("cemeteries");
   const all = await loadFeatures();
-  const cem = all.filter(f => f.category === "cemetery");
+  const cem = all.filter(f => 
+    Array.isArray(f.category) ? f.category.includes("cemetery") : f.category === "cemetery"
+  );
   const map = L.map('cem-map', { center: [21, 78], zoom: 5 });
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO',

@@ -74,7 +74,9 @@
 (async function() {
   setActiveNav("synagogues");
   const all = await loadFeatures();
-  const syn = all.filter(f => f.category === "synagogue");
+  const syn = all.filter(f => 
+    Array.isArray(f.category) ? f.category.includes("synagogue") : f.category === "synagogue"
+  );
   const map = L.map('syn-map', { center: [21, 78], zoom: 5 });
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO',

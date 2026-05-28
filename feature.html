@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Feature · Jewish India Digital Heritage Trail</title>
+<script src="https://www.unpkg.com/@samvera/clover-iiif@latest/dist/web-components/index.umd.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="assets/site.css">
+  
 </head>
 <body>
 
@@ -61,45 +63,121 @@
     root.innerHTML = `<h1>Not found</h1><p>No feature with id <code>${id}</code>. <a href="map.html">Back to map</a>.</p>`;
     return;
   }
+  
   document.title = `${f.name} · Jewish India Digital Heritage Trail`;
+  
   const meta = [
     categoryLabel(f),
     eraText(f),
     f.city || f.region,
     f.coords_approximate ? '· coords approximate' : ''
   ].filter(Boolean).join(' · ');
-  const galleryHtml = (f.images && f.images.length)
-    ? `<div class="gallery-large">` +
-        f.images.map(img => `<img src="${imageUrl(f, img)}" alt="${f.name}" loading="lazy" onclick="openLightbox(this.src)">`).join("") +
-      `</div>`
-    : `<div class="empty-state">
+
+  // 1. Array-safe manifest check
+  const manifests = Array.isArray(f.iiif_manifest) 
+    ? f.iiif_manifest 
+    : (f.iiif_manifest ? [f.iiif_manifest] : []);
+
+  // 2. Smart Gallery logic (don't show "No images" if IIIF exists)
+  let galleryHtml = '';
+  if (f.images && f.images.length > 0) {
+    galleryHtml = `
+      <div class="camera-roll-wrapper" style="margin: 2rem 0;">
+        <h3 style="font-size: 0.85rem; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem;">Gallery</h3>
+        
+        <div class="camera-roll" style="
+          display: flex; 
+          gap: 12px; 
+          overflow-x: auto; 
+          padding-bottom: 12px; 
+          scroll-snap-type: x mandatory; 
+          scrollbar-width: thin;
+        ">
+          ${f.images.map(img => `
+            <img 
+              src="${imageUrl(f, img)}" 
+              alt="${f.name}" 
+              loading="lazy" 
+              onclick="openLightbox(this.src)"
+              style="
+                height: 180px; 
+                width: auto; 
+                max-width: 85vw; 
+                border-radius: 8px; 
+                cursor: zoom-in; 
+                scroll-snap-align: start; 
+                flex-shrink: 0; 
+                object-fit: cover; 
+                border: 1px solid var(--border, #ddd);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+              "
+            >
+          `).join("")}
+        </div>
+      </div>
+    `;
+  } else if (manifests.length === 0) {
+    galleryHtml = `<div class="empty-state">
          <div class="empty-peacock peacock-mark" aria-hidden="true"></div>
          <p>No images yet for this site.</p>
        </div>`;
+  }
   const desc = f.description
     ? `<div class="feature-desc">${f.description}</div>`
     : `<div class="feature-desc-placeholder">Description not yet written. Edit <code>data/features.json</code> to add one.</div>`;
+    
   const sources = f.sources && f.sources.length
     ? `<p class="feature-sources"><strong>Sources:</strong> ${f.sources.join('; ')}</p>` : '';
 
-  // IIIF viewer — rendered only when a manifest URL is present
-  const iiifHtml = f.iiif_manifest ? `
+  // 3. Multi-viewer Clover IIIF Horizontal Slider
+  const iiifHtml = manifests.length > 0 ? `
+    <style>
+      .iiif-slider {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 1.5rem;
+        padding-bottom: 1rem;
+        scrollbar-width: thin; /* Firefox */
+      }
+      .iiif-slider::-webkit-scrollbar { height: 8px; }
+      .iiif-slider::-webkit-scrollbar-thumb { background: var(--border, #ccc); border-radius: 4px; }
+      .iiif-slide {
+        flex: 0 0 100%;
+        scroll-snap-align: center;
+        min-width: 0;
+      }
+      clover-viewer {
+        display: block;
+        height: 65vh;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fdfdfd;
+      }
+    </style>
+    
     <section class="iiif-section">
-      <h2 class="iiif-heading">IIIF Collection</h2>
-      <div class="iiif-embed">
-        <iframe
-          src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}"
-          allowfullscreen
-          title="IIIF viewer for ${f.name}">
-        </iframe>
+      <h2 class="iiif-heading">IIIF Collection${manifests.length > 1 ? 's' : ''}</h2>
+      ${manifests.length > 1 ? `<p style="font-size: 0.9em; color: var(--muted); margin-bottom: 1rem;">Swipe or scroll horizontally to view more collections →</p>` : ''}
+      
+      <div class="iiif-slider">
+        ${manifests.map((manifestUrl, index) => `
+          <div class="iiif-slide">
+            
+            <clover-viewer id="${manifestUrl}"></clover-viewer>
+            
+            <p class="iiif-links" style="margin-top: 0.75rem; font-size: 0.9em; text-align: center;">
+              <span style="color: var(--muted);">Viewer ${index + 1} of ${manifests.length}</span>
+              &ensp;·&ensp;
+              <a href="${manifestUrl}" target="_blank" rel="noopener">View manifest JSON ↗</a>
+            </p>
+          </div>
+        `).join("")}
       </div>
-      <p class="iiif-links">
-        <a href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(f.iiif_manifest)}" target="_blank" rel="noopener">Open in Universal Viewer ↗</a>
-        &ensp;·&ensp;
-        <a href="${f.iiif_manifest}" target="_blank" rel="noopener">View manifest JSON ↗</a>
-      </p>
     </section>` : '';
 
+  // 4. Inject everything into the page
   root.innerHTML = `
     <p class="back-link"><a href="javascript:history.back()">← Back</a></p>
     <h1>${f.name}</h1>
@@ -112,6 +190,8 @@
     ${f.coords ? `<div id="mini-map" class="mini-map"></div>` : ''}
     ${sources}
   `;
+  
+  // 5. Initialize the mini-map (ALSO MISSING)
   if (f.coords) {
     const m = L.map('mini-map', { center: f.coords, zoom: 14, scrollWheelZoom: false });
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {

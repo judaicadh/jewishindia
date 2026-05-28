@@ -4,7 +4,7 @@ A static website mapping synagogues, cemeteries, schools, mills, and civic landm
 
 ## What's included
 
-- **102 features** across India: 28 Bombay/Deccan sites with images, 32 synagogues from across India/Pakistan/Burma, and 42 cemeteries from the Isaac Solomon survey.
+- **Features** Places across India including synagogues, cemeteries, and educational institutions.
 - **Interactive map** with community layer toggles, timeline filter (ancient era to present), category and region filters.
 - **Themed pages**: Synagogues, Cemeteries, Sassoon Mills, plus per-feature detail pages.
 - **Self-contained, no build step** — just static HTML, CSS, and JS plus one `data/features.json` file.
@@ -64,8 +64,8 @@ All site content lives in `data/features.json`. Each feature looks like:
   "coords": [18.9669, 72.8322],
   "category": "synagogue",
   "community": ["baghdadi"],
-  "era_start": 1861,
-  "era_end": null,
+  "date_start": 1861,
+  "date_end": null,
   "city": "Bombay",
   "state": "Maharashtra",
   "address": "...",
@@ -84,7 +84,7 @@ Use any combination of: `bene_israel`, `baghdadi`, `cochini`, `kerala`, `diaspor
 
 ### Categories
 
-Used for filtering and the listing pages: `synagogue`, `cemetery`, `school`, `hospital`, `library`, `clock_tower`, `garden`, `dock`, `mill`, `mill_site`, `district`, `chabad`, `civic`, `other`.
+Used for filtering and the listing pages: `synagogue`, `cemetery`, `education`, `hospital`, `library`, `military`, `mill`, `civic`, `other`.
 
 ## Hosting
 
