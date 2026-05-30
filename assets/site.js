@@ -56,7 +56,7 @@ const _COM = {
 const _CAT = {
   'synagogue':'synagogue','synagogues':'synagogue','prayer hall':'synagogue',
   'cemetery':'cemetery','cemeteries':'cemetery','burial ground':'cemetery','graveyard':'cemetery',
-  'school':'school','schools':'school','college':'school',
+  'education':'school':'education','schools':'education','college':'edcuation','education'
   'hospital':'hospital','library':'library',
   'clock tower':'clock_tower','clock_tower':'clock_tower','tower':'clock_tower',
   'garden':'garden','park':'garden','dock':'dock','docks':'dock',
