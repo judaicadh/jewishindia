@@ -33,7 +33,7 @@ Notes on a few fields:
         "Diaspora"                  -> diaspora
         "Emerging" / "Bene Menashe" -> emerging
   - Theme maps onto a category:
-        synagogue, cemetery, school, hospital, library, clock tower,
+        synagogue, cemetery, education, medical, library, clock tower,
         garden, dock, mill, mill site, district, chabad, civic, other
   - Date Established / Date Closed accept plain years (1861), BCE
     ("562 BCE" or -562), or "c. 1861" - non-digit text is stripped.
@@ -141,10 +141,10 @@ CATEGORY_ALIASES = {
     'cemeteries':      'cemetery',
     'burial ground':   'cemetery',
     'graveyard':       'cemetery',
+    'education':       'education',
     'school':          'education',
     'schools':         'education',
-    'education':       'education',
-    'college':         'school',
+    'college':         'education',
     'medical':         'medical',
     'hospital':        'medical',
     'library':         'library',
