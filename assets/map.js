@@ -170,7 +170,7 @@ function updateTimelineLabels() {
 }
 
 function passesFilters(f) {
-  // Community: must intersect (your existing logic)
+  // Community: must intersect
   if (state.communities.size > 0) {
     const cs = (f.community || []).filter(c => COMMUNITY_COLORS[c]);
     if (cs.length > 0 && !cs.some(c => state.communities.has(c))) {
@@ -178,27 +178,27 @@ function passesFilters(f) {
     }
   }
 
-  // FIXED: Category logic for Lists
+  // Category: at least one of the site's categories must be selected
   if (state.categories.size > 0) {
-    // Check if at least one of the site's categories is in the selected filters
-    const siteCategories = f.category || [];
-    const hasMatch = siteCategories.some(cat => state.categories.has(cat));
-    if (!hasMatch) return false;
+    const siteCategories = Array.isArray(f.category)
+      ? f.category
+      : (f.category ? [f.category] : []);
+    if (!siteCategories.some(cat => state.categories.has(cat))) return false;
   }
 
-  // Region & Timeline (your existing logic)
+  // Region
   if (state.regions.size > 0) {
     const r = f.city || f.region || 'Unknown';
     if (!state.regions.has(r)) return false;
   }
-  
-  // Use date_start from your features.json (check if it exists)
+
+  // Timeline
   if (f.date_start == null) {
     if (!state.showUndated) return false;
   } else {
     if (f.date_start < state.yearMin || f.date_start > state.yearMax) return false;
   }
-  
+
   return true;
 }
 
