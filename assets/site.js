@@ -55,11 +55,13 @@ const _COM = {
 };
 const _CAT = {
   'synagogue':'synagogue','synagogues':'synagogue','prayer hall':'synagogue',
+  'bollywood':'bollywood',
   'cemetery':'cemetery','cemeteries':'cemetery','burial ground':'cemetery','graveyard':'cemetery',
   'education':'education','school':'education','schools':'education','college':'education',
   'hospital':'hospital','library':'library',
   'clock tower':'clock_tower','clock_tower':'clock_tower','tower':'clock_tower',
   'garden':'garden','park':'garden','dock':'dock','docks':'dock',
+  'military':'military',
   'mill':'mill','mills':'mill','mill site':'mill_site','mill_site':'mill_site',
   'district':'district','neighbourhood':'district','neighborhood':'district',
   'chabad':'chabad','chabad house':'chabad',
