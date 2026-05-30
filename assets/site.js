@@ -29,8 +29,8 @@ const CATEGORY_LABELS = {
 const _COL = {
   'place name':'name','name':'name','title':'name',
   'latitude':'lat','lat':'lat','longitude':'lon','lon':'lon','lng':'lon',
-  'date established':'era_start','established':'era_start','era start':'era_start',
-  'date closed':'era_end','closed':'era_end','era end':'era_end',
+  'date established':'date_start','established':'date_start','era start':'date_start','era_start':'date_start',
+  'date closed':'date_end','closed':'date_end','era end':'date_end','era_end':'date_end',
   'state':'state','province':'state','city':'city','town':'city',
   'theme':'category','category':'category','type':'category',
   'community':'community','communities':'community',
