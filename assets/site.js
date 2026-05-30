@@ -155,7 +155,7 @@ function _rowToFeature(row, existingById) {
     category:_mapCat(n.category),
     community:_mapCom(n.community),
     coords,coords_approximate:_bool(n.coords_approximate),
-    era_start:_year(n.era_start),era_end:_year(n.era_end),
+    date_start:_year(n.date_start),date_end:_year(n.date_end),
     city:n.city||null,state:n.state||null,address:n.address||null,
     description:n.description||'',
     image_folder:n.image_folder||name,
