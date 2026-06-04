@@ -190,7 +190,14 @@ def normalize_value(s):
 def slugify(s):
     s = re.sub(r"[^\w\s-]", "", s).strip().lower()
     s = re.sub(r"[\s_-]+", "-", s)
-    return s.strip("-")
+    s = s.strip("-")
+    # Cap to ~60 chars at a word boundary — protects URLs when a row accidentally
+    # has the description (or other long text) pasted into the Place Name cell.
+    if len(s) > 60:
+        truncated = s[:60]
+        last_dash = truncated.rfind('-')
+        s = truncated[:last_dash] if last_dash > 20 else truncated
+    return s
 
 def truthy(v):
     return str(v).strip().lower() in ('true','yes','y','1','x','done','complete','completed')
@@ -262,6 +269,12 @@ def row_to_feature(row, existing_by_id):
     name = normed.get('name', '').strip()
     if not name:
         return None
+
+    # Sanity-check the name. A 200-char Place Name almost always means a
+    # description got pasted into the wrong column.
+    if len(name) > 120:
+        print(f"  warn: Place Name is {len(name)} chars (probably description-in-name-column): "
+              f"{name[:80]}...")
 
     # Skip rows explicitly marked as unpublished (blank = publish by default)
     pub = normed.get('published', '').strip()

@@ -77,7 +77,13 @@ function _nv(s) { // normalize value
   return (s||'').trim().toLowerCase().replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim();
 }
 function _slug(s) {
-  return s.replace(/[^\w\s-]/g,'').trim().toLowerCase().replace(/[\s_-]+/g,'-').replace(/^-+|-+$/g,'');
+  const cleaned = s.replace(/[^\w\s-]/g,'').trim().toLowerCase().replace(/[\s_-]+/g,'-').replace(/^-+|-+$/g,'');
+  // Cap to ~60 chars at a word boundary — protects URLs when a row accidentally
+  // has the description (or other long text) pasted into the Place Name cell.
+  if (cleaned.length <= 60) return cleaned;
+  const truncated = cleaned.slice(0, 60);
+  const lastDash = truncated.lastIndexOf('-');
+  return (lastDash > 20 ? truncated.slice(0, lastDash) : truncated);
 }
 function _bool(v) {
   return ['true','yes','y','1','x','done','complete','completed'].includes(String(v).trim().toLowerCase());
