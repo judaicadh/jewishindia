@@ -442,9 +442,17 @@ function openLightbox(src) {
 
 function featureCardHTML(feature) {
   const img = firstImage(feature);
-  const thumb = img
-    ? `<div class="thumb" style="background-image:url('${img}')"></div>`
-    : `<div class="thumb empty"><span>${categoryLabel(feature)}</span></div>`;
+  let thumb;
+  if (img) {
+    thumb = `<div class="thumb" style="background-image:url('${img}')"></div>`;
+  } else if (feature.iiif_manifest) {
+    // No direct image but we have a IIIF manifest — render a placeholder
+    // that enhanceIIIFThumbs() will fill in once the manifest resolves.
+    const manifest = Array.isArray(feature.iiif_manifest) ? feature.iiif_manifest[0] : feature.iiif_manifest;
+    thumb = `<div class="thumb empty" data-iiif-manifest="${manifest}"><span>${categoryLabel(feature)}</span></div>`;
+  } else {
+    thumb = `<div class="thumb empty"><span>${categoryLabel(feature)}</span></div>`;
+  }
   return `
     <article class="card">
       <a href="feature.html?id=${encodeURIComponent(feature.id)}">
@@ -456,6 +464,30 @@ function featureCardHTML(feature) {
         </div>
       </a>
     </article>`;
+}
+
+// Walk a container, find any [data-iiif-manifest] placeholders left behind
+// by featureCardHTML(), and upgrade each to a real thumbnail by fetching
+// the manifest and using its first canvas. Fires in parallel; cached so
+// re-renders are instant.
+async function enhanceIIIFThumbs(root) {
+  root = root || document;
+  const placeholders = root.querySelectorAll('[data-iiif-manifest]');
+  if (!placeholders.length) return;
+  await Promise.all([...placeholders].map(async el => {
+    const url = el.dataset.iiifManifest;
+    el.removeAttribute('data-iiif-manifest');  // claim it so a re-call won't double-process
+    try {
+      const images = await iiifManifestToImages(url);
+      if (!images.length) return;
+      el.style.backgroundImage = `url('${images[0].thumb}')`;
+      el.classList.remove('empty');
+      const label = el.querySelector('span');
+      if (label) label.remove();
+    } catch (e) {
+      // Swallow — placeholder stays as the empty-state category badge
+    }
+  }));
 }
 
 // The Peacock SVG mark — used in headers, hero, and as a subtle empty-state illustration.

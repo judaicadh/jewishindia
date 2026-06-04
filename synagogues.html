@@ -99,6 +99,7 @@
       (f.state||'').toLowerCase().includes(t)
     ) : syn;
     grid.innerHTML = list.map(featureCardHTML).join("");
+    enhanceIIIFThumbs(grid);
     count.textContent = `(${list.length})`;
   }
   paint();

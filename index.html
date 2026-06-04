@@ -112,9 +112,12 @@
 (async function() {
   setActiveNav("home");
   const features = await loadFeatures();
-  const withImages = features.filter(f => f.images && f.images.length > 0);
-  const sample = (withImages.length >= 6 ? withImages : features).slice(0, 6);
-  document.getElementById("featured-grid").innerHTML = sample.map(featureCardHTML).join("");
+  // Features eligible for the front-page grid: anything with a photo OR IIIF manifest
+  const withMedia = features.filter(f => (f.images && f.images.length > 0) || f.iiif_manifest);
+  const sample = (withMedia.length >= 6 ? withMedia : features).slice(0, 6);
+  const grid = document.getElementById("featured-grid");
+  grid.innerHTML = sample.map(featureCardHTML).join("");
+  enhanceIIIFThumbs(grid);
 })();
 </script>
 </body>

@@ -98,6 +98,7 @@
       (f.description||'').toLowerCase().includes(t)
     ) : cem;
     grid.innerHTML = list.map(featureCardHTML).join("");
+    enhanceIIIFThumbs(grid);
     count.textContent = `(${list.length})`;
   }
   paint();
