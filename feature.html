@@ -131,6 +131,7 @@
     ${desc}
     ${f.address ? `<p class="feature-address"><strong>Address:</strong> ${f.address}${f.state?', '+f.state:''}</p>` : ''}
     ${galleryHtml}
+    ${featureLinks(f)}
     ${f.coords ? `<div id="mini-map" class="mini-map"></div>` : ''}
     ${sources}
   `;

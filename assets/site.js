@@ -180,6 +180,71 @@ function _mapCom(val) {
   }
   return out;
 }
+
+// ─── External links from sheet columns ───────────────────────────────────────
+// Each entry maps one or more column-header forms to a label + URL template.
+// To add a new database, just append another entry — no other code changes.
+const EXTERNAL_LINKS = [
+  {
+    keys: ['jewishgen id', 'jewishgen'],
+    label: 'JewishGen',
+    url: v => /^https?:\/\//i.test(v)
+      ? v
+      : `https://www.jewishgen.org/databases/cemetery/jowbrshow.php?ID=${encodeURIComponent(v)}`,
+  },
+  {
+    keys: ['wikidata', 'wikidata id', 'wikidata qid'],
+    label: 'Wikidata',
+    url: v => /^https?:\/\//i.test(v)
+      ? v
+      : `https://www.wikidata.org/wiki/${encodeURIComponent(v.trim().toUpperCase())}`,
+  },
+  {
+    keys: ['wikipedia', 'wikipedia url', 'wikipedia article'],
+    label: 'Wikipedia',
+    url: v => /^https?:\/\//i.test(v)
+      ? v
+      : `https://en.wikipedia.org/wiki/${encodeURIComponent(v.trim().replace(/ /g, '_'))}`,
+  },
+  {
+    keys: ['google maps', 'gmaps', 'google maps url'],
+    label: 'Google Maps',
+    url: v => /^https?:\/\//i.test(v)
+      ? v
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v)}`,
+  },
+  {
+    keys: ['internet archive', 'archive.org', 'ia identifier'],
+    label: 'Internet Archive',
+    url: v => /^https?:\/\//i.test(v) ? v : `https://archive.org/details/${encodeURIComponent(v)}`,
+  },
+];
+
+// Render the external-link strip for a feature. Returns '' if nothing applies.
+function featureLinks(feature) {
+  if (!feature) return '';
+  // Build a normalized lookup of every string field — both top-level and from extras.
+  const lookup = {};
+  const collect = obj => {
+    for (const [k, v] of Object.entries(obj || {})) {
+      if (typeof v === 'string' && v.trim()) lookup[_nk(k)] = v.trim();
+    }
+  };
+  collect(feature);
+  collect(feature.extras);
+
+  const items = [];
+  for (const link of EXTERNAL_LINKS) {
+    for (const k of link.keys) {
+      if (lookup[k]) {
+        const href = link.url(lookup[k]);
+        items.push(`<a class="ext-link" href="${href}" target="_blank" rel="noopener">${link.label} <span class="ext-arrow">↗</span></a>`);
+        break;
+      }
+    }
+  }
+  return items.length ? `<div class="ext-links">${items.join('')}</div>` : '';
+}
 function _mapCat(val) {
   if(!val) return 'other'; const k=_nv(val);
   return _CAT[k]||_CAT[k.replace(/s$/,'')]||'other';

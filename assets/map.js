@@ -242,38 +242,28 @@ async function showDetail(f) {
       `</div>`
     : `<div class="no-images">No images yet</div>`;
 
-  // 2. Build the rest of the text
   const desc = f.description
     ? `<div class="description">${f.description}</div>`
     : `<div class="description placeholder">Description not yet written.</div>`;
-    
-  const meta = [
-    categoryLabel(f),
-    eraText(f),
-    f.city || f.region,
-    f.coords_approximate ? '· coords approximate' : ''
-  ].filter(Boolean).join(' · ');
 
-  // Generate the absolute URL for the permalink
   const permalinkUrl = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(f.id)}`;
 
-  // 3. Render the panel
   panel.innerHTML = `
     <div class="panel-content">
       <h2>${f.name}</h2>
-      <div class="meta-line">${meta}</div>
       <div class="chips chips-row">${communityChips(f)}</div>
       ${mediaHtml}
       ${desc}
       ${f.address ? `<div class="panel-address"><strong>Address:</strong> ${f.address}</div>` : ''}
-      
+      ${featureLinks(f)}
+
       <div style="margin: 1.5rem 0 1rem 0; padding: 0.75rem; background: var(--bg-alt, #f4f4f4); border-radius: 6px;">
         <label style="display: block; font-size: 0.8em; font-weight: 600; margin-bottom: 0.3rem; color: var(--muted, #666); text-transform: uppercase; letter-spacing: 0.5px;">Map Permalink</label>
-        <input 
-          type="text" 
-          readonly 
-          value="${permalinkUrl}" 
-          onclick="this.select(); navigator.clipboard.writeText(this.value);" 
+        <input
+          type="text"
+          readonly
+          value="${permalinkUrl}"
+          onclick="this.select(); navigator.clipboard.writeText(this.value);"
           style="width: 100%; padding: 0.5rem; border: 1px solid var(--border, #ccc); border-radius: 4px; background: #fff; color: #333; cursor: copy; font-family: monospace; font-size: 0.85em;"
           title="Click to copy to clipboard"
         >
