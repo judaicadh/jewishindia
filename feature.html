@@ -129,52 +129,60 @@
   const sources = f.sources && f.sources.length
     ? `<p class="feature-sources"><strong>Sources:</strong> ${f.sources.join('; ')}</p>` : '';
 
-  // 3. Multi-viewer Clover IIIF Horizontal Slider
+  // 3. Clover IIIF viewer(s) — vertically stacked, themed to match site palette
   const iiifHtml = manifests.length > 0 ? `
     <style>
-      .iiif-slider {
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        gap: 1.5rem;
-        padding-bottom: 1rem;
-        scrollbar-width: thin; /* Firefox */
+      .iiif-viewer-wrap {
+        margin-bottom: 1.75rem;
+        /* Clover IIIF theme tokens — pulled from peacock palette */
+        --colors-accent: var(--peacock-deep, #0F4C5C);
+        --colors-accentMuted: var(--peacock-light, #2C7A8F);
+        --colors-accentAlt: var(--gold, #D4A537);
+        --colors-primary: var(--paper, #FFFEF8);
+        --colors-primaryMuted: var(--cream-warm, #F2E9D0);
+        --colors-primaryAlt: var(--ink, #1A2B33);
+        --colors-secondary: var(--cream, #F8F2E2);
+        --colors-secondaryMuted: var(--line-soft, #EFE7CD);
+        --colors-secondaryAlt: var(--muted, #7B8A92);
       }
-      .iiif-slider::-webkit-scrollbar { height: 8px; }
-      .iiif-slider::-webkit-scrollbar-thumb { background: var(--border, #ccc); border-radius: 4px; }
-      .iiif-slide {
-        flex: 0 0 100%;
-        scroll-snap-align: center;
-        min-width: 0;
-      }
-      clover-viewer {
+      .iiif-viewer-wrap clover-viewer {
         display: block;
-        height: 65vh;
-        border: 1px solid var(--border);
-        border-radius: 8px;
+        width: 100%;
+        height: 600px;
+        max-height: 75vh;
+        border: 1px solid var(--line, #E2D6B5);
+        border-radius: var(--radius, 8px);
         overflow: hidden;
-        background: #fdfdfd;
+        background: var(--paper, #FFFEF8);
+      }
+      .iiif-counter {
+        font-size: 0.78rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin: 0 0 0.5rem;
+      }
+      .iiif-links {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin: 0.6rem 0 0;
+      }
+      @media (max-width: 700px) {
+        .iiif-viewer-wrap clover-viewer { height: 480px; }
       }
     </style>
-    
+
     <section class="iiif-section">
-      <h2 class="iiif-heading">IIIF Collection${manifests.length > 1 ? 's' : ''}</h2>
-      ${manifests.length > 1 ? `<p style="font-size: 0.9em; color: var(--muted); margin-bottom: 1rem;">Swipe or scroll horizontally to view more collections →</p>` : ''}
-      
-      <div class="iiif-slider">
-        ${manifests.map((manifestUrl, index) => `
-          <div class="iiif-slide">
-            
-            <clover-viewer id="${manifestUrl}"></clover-viewer>
-            
-            <p class="iiif-links" style="margin-top: 0.75rem; font-size: 0.9em; text-align: center;">
-              <span style="color: var(--muted);">Viewer ${index + 1} of ${manifests.length}</span>
-              &ensp;·&ensp;
-              <a href="${manifestUrl}" target="_blank" rel="noopener">View manifest JSON ↗</a>
-            </p>
-          </div>
-        `).join("")}
-      </div>
+      <h2 class="iiif-heading">${manifests.length > 1 ? 'IIIF Collections' : 'IIIF Collection'}</h2>
+      ${manifests.map((manifestUrl, index) => `
+        <div class="iiif-viewer-wrap">
+          ${manifests.length > 1 ? `<p class="iiif-counter">Collection ${index + 1} of ${manifests.length}</p>` : ''}
+          <clover-viewer iiif-content="${manifestUrl}"></clover-viewer>
+          <p class="iiif-links">
+            <a href="${manifestUrl}" target="_blank" rel="noopener">View manifest JSON ↗</a>
+          </p>
+        </div>
+      `).join("")}
     </section>` : '';
 
   // 4. Inject everything into the page
