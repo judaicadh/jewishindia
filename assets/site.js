@@ -100,6 +100,78 @@ function _urlList(v) {
   // newlines, commas, semicolons — friendly for sheet cells with one URL per line.
   if(!v) return []; return String(v).split(/[\n,;]+/).map(x=>x.trim()).filter(Boolean);
 }
+
+// ─── IIIF manifest → image URLs ──────────────────────────────────────────────
+// Given a IIIF Presentation API manifest URL, return an array of
+// { full, thumb } URLs — one per canvas. Handles both v2 and v3.
+// Returns [] on any error (CORS, network, malformed JSON) so callers can
+// silently fall back to whatever else they have.
+const _iiifCache = new Map();
+async function iiifManifestToImages(manifestUrl) {
+  if (!manifestUrl) return [];
+  if (_iiifCache.has(manifestUrl)) return _iiifCache.get(manifestUrl);
+  const p = (async () => {
+    try {
+      const res = await fetch(manifestUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const m = await res.json();
+      const out = [];
+      // IIIF Presentation 3
+      if (Array.isArray(m.items)) {
+        for (const canvas of m.items) {
+          const anno = canvas.items?.[0]?.items?.[0];
+          const body = anno?.body;
+          if (!body) continue;
+          const service = body.service?.[0];
+          const serviceId = service?.id || service?.['@id'];
+          const full = body.id || body['@id'];
+          if (!full && !serviceId) continue;
+          out.push({
+            full: serviceId ? `${serviceId}/full/max/0/default.jpg` : full,
+            thumb: serviceId ? `${serviceId}/full/400,/0/default.jpg` : full,
+          });
+        }
+      }
+      // IIIF Presentation 2
+      else if (m.sequences?.[0]?.canvases) {
+        for (const canvas of m.sequences[0].canvases) {
+          const resource = canvas.images?.[0]?.resource;
+          if (!resource) continue;
+          const serviceId = resource.service?.['@id'] || resource.service?.id;
+          const full = resource['@id'] || resource.id;
+          if (!full && !serviceId) continue;
+          out.push({
+            full: serviceId ? `${serviceId}/full/max/0/default.jpg` : full,
+            thumb: serviceId ? `${serviceId}/full/400,/0/default.jpg` : full,
+          });
+        }
+      }
+      return out;
+    } catch (e) {
+      console.warn(`[JIH] IIIF fetch failed for ${manifestUrl}:`, e.message);
+      return [];
+    }
+  })();
+  _iiifCache.set(manifestUrl, p);
+  return p;
+}
+
+// Given a feature, return a unified array of { thumb, full } image entries
+// drawn from feature.images (URL list) + feature.iiif_manifest (one or more).
+async function collectImages(feature) {
+  const entries = [];
+  for (const img of (feature.images || [])) {
+    const url = imageUrl(feature, img);
+    entries.push({ thumb: url, full: url });
+  }
+  const manifests = Array.isArray(feature.iiif_manifest)
+    ? feature.iiif_manifest
+    : (feature.iiif_manifest ? [feature.iiif_manifest] : []);
+  const iiifResults = await Promise.all(manifests.map(iiifManifestToImages));
+  for (const group of iiifResults) entries.push(...group);
+  return entries;
+}
+
 function _mapCom(val) {
   const out=[],seen=new Set();
   for(const raw of _list(val)){
