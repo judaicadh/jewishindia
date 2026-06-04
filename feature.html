@@ -73,119 +73,57 @@
     f.coords_approximate ? '· coords approximate' : ''
   ].filter(Boolean).join(' · ');
 
-  // 1. Array-safe manifest check
-  const manifests = Array.isArray(f.iiif_manifest) 
-    ? f.iiif_manifest 
-    : (f.iiif_manifest ? [f.iiif_manifest] : []);
-
-  // 2. Smart Gallery logic (don't show "No images" if IIIF exists)
-  let galleryHtml = '';
-  if (f.images && f.images.length > 0) {
-    galleryHtml = `
+  // 1. Build a unified gallery — URL images + IIIF manifest canvases all
+  //    rendered as ordinary thumbnails. Clicking opens the standard lightbox.
+  const gallery = await collectImages(f);
+  const galleryHtml = gallery.length > 0
+    ? `
       <div class="camera-roll-wrapper" style="margin: 2rem 0;">
-        <h3 style="font-size: 0.85rem; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem;">Gallery</h3>
-        
+        <h3 style="font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem;">Gallery <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">· ${gallery.length} image${gallery.length === 1 ? '' : 's'}</span></h3>
         <div class="camera-roll" style="
-          display: flex; 
-          gap: 12px; 
-          overflow-x: auto; 
-          padding-bottom: 12px; 
-          scroll-snap-type: x mandatory; 
+          display: flex;
+          gap: 12px;
+          overflow-x: auto;
+          padding-bottom: 12px;
+          scroll-snap-type: x mandatory;
           scrollbar-width: thin;
         ">
-          ${f.images.map(img => `
-            <img 
-              src="${imageUrl(f, img)}" 
-              alt="${f.name}" 
-              loading="lazy" 
-              onclick="openLightbox(this.src)"
+          ${gallery.map(entry => `
+            <img
+              src="${entry.thumb}"
+              data-full="${entry.full}"
+              alt="${f.name}"
+              loading="lazy"
+              onclick="openLightbox(this.dataset.full || this.src)"
               style="
-                height: 180px; 
-                width: auto; 
-                max-width: 85vw; 
-                border-radius: 8px; 
-                cursor: zoom-in; 
-                scroll-snap-align: start; 
-                flex-shrink: 0; 
-                object-fit: cover; 
-                border: 1px solid var(--border, #ddd);
+                height: 180px;
+                width: auto;
+                max-width: 85vw;
+                border-radius: 8px;
+                cursor: zoom-in;
+                scroll-snap-align: start;
+                flex-shrink: 0;
+                object-fit: cover;
+                border: 1px solid var(--line, #ddd);
                 box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                background: var(--cream-warm);
               "
             >
           `).join("")}
         </div>
-      </div>
-    `;
-  } else if (manifests.length === 0) {
-    galleryHtml = `<div class="empty-state">
+      </div>`
+    : `<div class="empty-state">
          <div class="empty-peacock peacock-mark" aria-hidden="true"></div>
          <p>No images yet for this site.</p>
        </div>`;
-  }
+
   const desc = f.description
     ? `<div class="feature-desc">${f.description}</div>`
-    : `<div class="feature-desc-placeholder">Description not yet written. Edit <code>data/features.json</code> to add one.</div>`;
-    
+    : `<div class="feature-desc-placeholder">Description not yet written.</div>`;
+
   const sources = f.sources && f.sources.length
     ? `<p class="feature-sources"><strong>Sources:</strong> ${f.sources.join('; ')}</p>` : '';
 
-  // 3. Clover IIIF viewer(s) — vertically stacked, themed to match site palette
-  const iiifHtml = manifests.length > 0 ? `
-    <style>
-      .iiif-viewer-wrap {
-        margin-bottom: 1.75rem;
-        /* Clover IIIF theme tokens — pulled from peacock palette */
-        --colors-accent: var(--peacock-deep, #0F4C5C);
-        --colors-accentMuted: var(--peacock-light, #2C7A8F);
-        --colors-accentAlt: var(--gold, #D4A537);
-        --colors-primary: var(--paper, #FFFEF8);
-        --colors-primaryMuted: var(--cream-warm, #F2E9D0);
-        --colors-primaryAlt: var(--ink, #1A2B33);
-        --colors-secondary: var(--cream, #F8F2E2);
-        --colors-secondaryMuted: var(--line-soft, #EFE7CD);
-        --colors-secondaryAlt: var(--muted, #7B8A92);
-      }
-      .iiif-viewer-wrap clover-viewer {
-        display: block;
-        width: 100%;
-        height: 600px;
-        max-height: 75vh;
-        border: 1px solid var(--line, #E2D6B5);
-        border-radius: var(--radius, 8px);
-        overflow: hidden;
-        background: var(--paper, #FFFEF8);
-      }
-      .iiif-counter {
-        font-size: 0.78rem;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin: 0 0 0.5rem;
-      }
-      .iiif-links {
-        font-size: 0.82rem;
-        color: var(--muted);
-        margin: 0.6rem 0 0;
-      }
-      @media (max-width: 700px) {
-        .iiif-viewer-wrap clover-viewer { height: 480px; }
-      }
-    </style>
-
-    <section class="iiif-section">
-      <h2 class="iiif-heading">${manifests.length > 1 ? 'IIIF Collections' : 'IIIF Collection'}</h2>
-      ${manifests.map((manifestUrl, index) => `
-        <div class="iiif-viewer-wrap">
-          ${manifests.length > 1 ? `<p class="iiif-counter">Collection ${index + 1} of ${manifests.length}</p>` : ''}
-          <clover-viewer iiif-content="${manifestUrl}"></clover-viewer>
-          <p class="iiif-links">
-            <a href="${manifestUrl}" target="_blank" rel="noopener">View manifest JSON ↗</a>
-          </p>
-        </div>
-      `).join("")}
-    </section>` : '';
-
-  // 4. Inject everything into the page
   root.innerHTML = `
     <p class="back-link"><a href="javascript:history.back()">← Back</a></p>
     <h1>${f.name}</h1>
@@ -194,7 +132,6 @@
     ${desc}
     ${f.address ? `<p class="feature-address"><strong>Address:</strong> ${f.address}${f.state?', '+f.state:''}</p>` : ''}
     ${galleryHtml}
-    ${iiifHtml}
     ${f.coords ? `<div id="mini-map" class="mini-map"></div>` : ''}
     ${sources}
   `;
