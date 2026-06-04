@@ -315,23 +315,14 @@ function _rowToFeature(row, existingById) {
     date_start:_year(n.date_start),date_end:_year(n.date_end),
     city:n.city||null,state:n.state||null,address:n.address||null,
     description:n.description||'',
-    image_folder:n.image_folder||name,
     iiif_manifest:n.iiif_manifest||null,
     verified:_bool(n.verified),
     sources:_list(n.sources).length?_list(n.sources):['Google Sheet'],
   };
-  if(feat.image_folder) feat.image_dir=`../${feat.image_folder}`;
-  // If the sheet provides explicit image URLs, use them. Otherwise the
-  // carry-over below fills in the locally-discovered filename list.
+  // Images come ONLY from the sheet's images column (URLs) and/or the
+  // iiif_manifest column. No local-folder lookup, no snapshot carry-over.
   const imageUrls=_urlList(n.images);
   if(imageUrls.length) feat.images=imageUrls;
-  // Carry over image data from the static snapshot (images on disk)
-  const prev=existingById[fid];
-  if(prev){
-    for(const k of ['images','tiff_archive','image_dir','image_dir_converted','converted_images']){
-      if(k in prev&&!feat[k]) feat[k]=prev[k];
-    }
-  }
   if(n.notes) extras.notes=n.notes;
   if(n.image_uploaded!==undefined) extras.image_uploaded=_bool(n.image_uploaded);
   if(n.text_uploaded!==undefined)  extras.text_uploaded=_bool(n.text_uploaded);

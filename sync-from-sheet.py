@@ -308,25 +308,15 @@ def row_to_feature(row, existing_by_id):
         'state': normed.get('state') or None,
         'address': normed.get('address') or None,
         'description': normed.get('description') or '',
-        'image_folder': normed.get('image_folder') or name,
         'iiif_manifest': normed.get('iiif_manifest') or None,
         'verified': truthy(normed.get('verified')),
         'sources': parse_list(normed.get('sources')) or ['Google Sheet'],
     }
-    if feat['image_folder']:
-        feat['image_dir'] = f"../{feat['image_folder']}"
-
-    # If the sheet provides explicit image URLs, use them. Otherwise the
-    # carry-over below will fill in the locally-discovered filename list.
+    # Images come ONLY from the sheet's images column (URLs) and/or the
+    # iiif_manifest column. No local-folder lookup, no snapshot carry-over.
     image_urls = parse_url_list(normed.get('images'))
     if image_urls:
         feat['images'] = image_urls
-
-    prev = existing_by_id.get(fid)
-    if prev:
-        for k in ('images','tiff_archive','image_dir','image_dir_converted','converted_images'):
-            if k in prev and not feat.get(k):
-                feat[k] = prev[k]
 
     extras = dict(extras_unknown)
     if normed.get('notes'):          extras['notes'] = normed['notes']
