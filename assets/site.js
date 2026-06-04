@@ -59,7 +59,10 @@ const _CAT = {
   'bollywood':'bollywood',
   'cemetery':'cemetery','cemeteries':'cemetery','burial ground':'cemetery','graveyard':'cemetery',
   'education':'education','school':'education','schools':'education','college':'education',
-  'hospital':'hospital','library':'library',
+  'medical':'medical','hospital':'medical','clinic':'medical',
+  'trade and business':'trade_and_business','trade_and_business':'trade_and_business',
+  'trade':'trade_and_business','business':'trade_and_business','commerce':'trade_and_business',
+  'library':'library',
   'clock tower':'clock_tower','clock_tower':'clock_tower','tower':'clock_tower',
   'garden':'garden','park':'garden','dock':'dock','docks':'dock',
   'military':'military',
@@ -223,6 +226,11 @@ const EXTERNAL_LINKS = [
     keys: ['internet archive', 'archive.org', 'ia identifier'],
     label: 'Internet Archive',
     url: v => /^https?:\/\//i.test(v) ? v : `https://archive.org/details/${encodeURIComponent(v)}`,
+  },
+  {
+    keys: ['virtual tour', '360 tour', 'anu 360', 'anu museum'],
+    label: '360° Virtual Tour',
+    url: v => v, // expects a full URL — these are usually one-off institutional links
   },
 ];
 
