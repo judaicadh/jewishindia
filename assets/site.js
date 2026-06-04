@@ -36,6 +36,7 @@ const _COL = {
   'community':'community','communities':'community',
   'image uploaded?':'image_uploaded','image uploaded':'image_uploaded',
   'image':'image_folder','image folder':'image_folder',
+  'images':'images','image urls':'images','photos':'images','photo urls':'images',
   'text uploaded':'text_uploaded','text uploaded?':'text_uploaded',
   'description':'description','notes':'notes','address':'address',
   'source':'sources','sources':'sources',
@@ -93,6 +94,11 @@ function _float(v) {
 }
 function _list(v) {
   if(!v) return []; return String(v).split(/[,;/]/).map(x=>x.trim()).filter(Boolean);
+}
+function _urlList(v) {
+  // Like _list, but NOT split on '/' (URLs contain slashes). Splits on
+  // newlines, commas, semicolons — friendly for sheet cells with one URL per line.
+  if(!v) return []; return String(v).split(/[\n,;]+/).map(x=>x.trim()).filter(Boolean);
 }
 function _mapCom(val) {
   const out=[],seen=new Set();
@@ -164,6 +170,10 @@ function _rowToFeature(row, existingById) {
     sources:_list(n.sources).length?_list(n.sources):['Google Sheet'],
   };
   if(feat.image_folder) feat.image_dir=`../${feat.image_folder}`;
+  // If the sheet provides explicit image URLs, use them. Otherwise the
+  // carry-over below fills in the locally-discovered filename list.
+  const imageUrls=_urlList(n.images);
+  if(imageUrls.length) feat.images=imageUrls;
   // Carry over image data from the static snapshot (images on disk)
   const prev=existingById[fid];
   if(prev){
@@ -219,6 +229,8 @@ async function loadFeatures() {
 // Resolve image URL given a feature + filename
 function imageUrl(feature, filename) {
   const dir = feature.image_dir || `../${feature.image_folder || ''}`;
+  // If it's already a full URL, pass through unchanged.
+  if (/^(https?:)?\/\//i.test(filename)) return filename;
   const enc = dir.split('/').map(seg => seg === '..' ? '..' : encodeURIComponent(seg)).join('/');
   return `${enc}/${encodeURIComponent(filename)}`;
 }

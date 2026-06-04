@@ -88,6 +88,10 @@ COLUMN_ALIASES = {
     'image uploaded':      'image_uploaded',
     'image':               'image_folder',
     'image folder':        'image_folder',
+    'images':              'images',
+    'image urls':          'images',
+    'photos':              'images',
+    'photo urls':          'images',
     'text uploaded':       'text_uploaded',
     'text uploaded?':      'text_uploaded',
     'description':         'description',
@@ -217,6 +221,14 @@ def parse_list(v):
     parts = re.split(r"[,;/]", str(v))
     return [p.strip() for p in parts if p.strip()]
 
+def parse_url_list(v):
+    # Like parse_list, but does NOT split on '/' (URLs contain slashes).
+    # Splits on newlines, commas, and semicolons — friendly for sheet cells
+    # where the user pastes one URL per line.
+    if not v: return []
+    parts = re.split(r"[\n,;]+", str(v))
+    return [p.strip() for p in parts if p.strip()]
+
 def map_community(values):
     out, seen = [], set()
     for raw in parse_list(values):
@@ -284,6 +296,12 @@ def row_to_feature(row, existing_by_id):
     }
     if feat['image_folder']:
         feat['image_dir'] = f"../{feat['image_folder']}"
+
+    # If the sheet provides explicit image URLs, use them. Otherwise the
+    # carry-over below will fill in the locally-discovered filename list.
+    image_urls = parse_url_list(normed.get('images'))
+    if image_urls:
+        feat['images'] = image_urls
 
     prev = existing_by_id.get(fid)
     if prev:
