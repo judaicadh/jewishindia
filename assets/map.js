@@ -225,73 +225,22 @@ function render() {
   document.getElementById('counts').innerHTML = `<strong>${shown}</strong> of ${ALL.length} sites shown`;
 }
 
-function showDetail(f) {
+async function showDetail(f) {
   const panel = document.getElementById('detail');
-  
-  // 1. Smart Media Handling
-  let mediaHtml = '';
 
-  // Safely ensure manifests is an array
-  const manifests = Array.isArray(f.iiif_manifest) 
-    ? f.iiif_manifest 
-    : (f.iiif_manifest ? [f.iiif_manifest] : []);
-
-  if (manifests.length > 0) {
-    // Multi-viewer Horizontal Slider (same logic as feature.html)
-    mediaHtml = `
-      <style>
-        .sidebar-iiif-slider {
-          display: flex;
-          overflow-x: auto;
-          scroll-snap-type: x mandatory;
-          gap: 1rem;
-          padding-bottom: 0.5rem;
-          scrollbar-width: thin;
-        }
-        .sidebar-iiif-slider::-webkit-scrollbar { height: 6px; }
-        .sidebar-iiif-slider::-webkit-scrollbar-thumb { background: var(--border, #ccc); border-radius: 4px; }
-        .sidebar-iiif-slide {
-          flex: 0 0 100%;
-          scroll-snap-align: center;
-          min-width: 0;
-        }
-      </style>
-      <div style="margin: 1rem 0;">
-        ${manifests.length > 1 ? `<p style="font-size: 0.8em; color: var(--muted); margin-bottom: 0.5rem;">Swipe to view ${manifests.length} collections →</p>` : ''}
-        <div class="sidebar-iiif-slider">
-          ${manifests.map((manifestUrl, index) => `
-            <div class="sidebar-iiif-slide">
-              <div style="border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #111;">
-                <iframe 
-                  src="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" 
-                  width="100%" 
-                  height="280px" 
-                  frameborder="0" 
-                  allowfullscreen
-                  title="IIIF Document Viewer ${index + 1}">
-                </iframe>
-              </div>
-              <p style="margin-top: 0.5rem; font-size: 0.8em; text-align: center;">
-                <a class="full-link" href="https://uv-v4.netlify.app/#?manifest=${encodeURIComponent(manifestUrl)}" target="_blank" rel="noopener">
-                  Open Viewer ${manifests.length > 1 ? index + 1 : ''} full screen ↗
-                </a>
-              </p>
-            </div>
-          `).join("")}
-        </div>
-      </div>
-    `;
-  } else if (f.images && f.images.length > 0) {
-    // If no IIIF, but local images exist, show the standard gallery
-    const imgs = f.images.slice(0, 6);
-    mediaHtml = `<div class="gallery">` +
-        imgs.map(img => `<img src="${imageUrl(f, img)}" alt="${f.name}" loading="lazy" onclick="openLightbox(this.src)">`).join("") +
-        (f.images.length > 6 ? `<div class="more">+${f.images.length - 6} more</div>` : '') +
-      `</div>`;
-  } else {
-    // Only show this placeholder if NEITHER exist
-    mediaHtml = `<div class="no-images">No images yet</div>`;
-  }
+  // Unified media — URL images and IIIF canvases share one thumbnail strip,
+  // clicking opens the standard lightbox. No embedded viewer, no external "fullscreen" link.
+  const gallery = await collectImages(f);
+  const previewCount = 6;
+  const preview = gallery.slice(0, previewCount);
+  const mediaHtml = preview.length > 0
+    ? `<div class="gallery">` +
+        preview.map(entry =>
+          `<img src="${entry.thumb}" data-full="${entry.full}" alt="${f.name}" loading="lazy" onclick="openLightbox(this.dataset.full || this.src)">`
+        ).join("") +
+        (gallery.length > previewCount ? `<div class="more">+${gallery.length - previewCount} more</div>` : '') +
+      `</div>`
+    : `<div class="no-images">No images yet</div>`;
 
   // 2. Build the rest of the text
   const desc = f.description
