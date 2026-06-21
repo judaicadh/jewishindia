@@ -149,6 +149,24 @@ h3 { font-size: 1.4rem; margin: 0 0 .5rem; }
   margin-top: 3px;
 }
 
+/* "BETA" pill next to the brand */
+.brand-beta {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: var(--peacock-deep);
+  background: var(--gold-soft);
+  border-radius: 999px;
+  text-transform: uppercase;
+  cursor: help;
+  vertical-align: 0.2em;
+}
+
 /* Header utility cluster (theme toggle, mobile menu trigger) */
 .site-header-utils {
   display: flex; align-items: center; gap: 6px;
