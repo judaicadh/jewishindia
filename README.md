@@ -8,7 +8,7 @@ A static website mapping synagogues, cemeteries, schools, mills, and civic landm
 - **Interactive map** with community layer toggles, timeline filter (ancient era to present), category and region filters.
 - **Themed pages**: Synagogues, Cemeteries, Sassoon Mills, plus per-feature detail pages.
 - **Self-contained, no build step** — just static HTML, CSS, and JS plus one `data/features.json` file.
-- **Google Sheet as the source of truth** — content is edited in a shared spreadsheet and synced into the site automatically.
+- **Google Sheet** — content is edited in a shared spreadsheet and synced into the site automatically.
 
 ## How the data flows
 
