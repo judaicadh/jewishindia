@@ -79,7 +79,7 @@
     Array.isArray(f.category) ? f.category.includes("synagogue") : f.category === "synagogue"
   );
   const map = L.map('syn-map', { center: [21, 78], zoom: 5 });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer(CARTO_BASEMAP_URL, {
     attribution: '&copy; OpenStreetMap &copy; CARTO',
     subdomains: 'abcd', maxZoom: 19
   }).addTo(map);

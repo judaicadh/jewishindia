@@ -1,5 +1,11 @@
 /* Shared utilities for Jewish India Digital Heritage Trail */
 
+// ─── Basemap ──────────────────────────────────────────────────────────────────
+// CARTO Positron base tiles, authenticated with the project API key.
+const CARTO_API_KEY = "cb1_26sc_6_f3cf68fd15ad201d23250b26";
+const CARTO_BASEMAP_URL =
+  `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?api_key=${CARTO_API_KEY}`;
+
 const COMMUNITY_LABELS = {
   bene_israel: "Bene Israel",
   baghdadi: "Baghdadi",

@@ -140,7 +140,7 @@
   // 5. Initialize the mini-map (ALSO MISSING)
   if (f.coords) {
     const m = L.map('mini-map', { center: f.coords, zoom: 14, scrollWheelZoom: false });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer(CARTO_BASEMAP_URL, {
       attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd'
     }).addTo(m);
     L.marker(f.coords).addTo(m);
