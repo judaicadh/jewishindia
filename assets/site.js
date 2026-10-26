@@ -664,3 +664,44 @@ async function setupSiteSearch() {
   });
 }
 document.addEventListener('DOMContentLoaded', setupSiteSearch);
+
+// ─── Cookie / storage consent banner ───────────────────────────────────────────
+// The site stores only functional data in the browser (theme choice, map filters).
+// The banner records the visitor's choice so it is shown only once.
+function setupCookieBanner() {
+  let stored;
+  try { stored = localStorage.getItem('jih-cookie-consent'); } catch (e) { stored = null; }
+  if (stored === 'accepted' || stored === 'declined') return;
+
+  const banner = document.createElement('div');
+  banner.className = 'cookie-banner';
+  banner.setAttribute('role', 'dialog');
+  banner.setAttribute('aria-live', 'polite');
+  banner.setAttribute('aria-label', 'Cookie notice');
+  banner.innerHTML = `
+    <p class="cookie-text">
+      This site uses your browser's local storage to remember preferences such as
+      dark mode and your map filters. We don't use advertising or tracking cookies.
+      <a href="about.html">Learn more</a>.
+    </p>
+    <div class="cookie-actions">
+      <button type="button" class="cookie-btn cookie-decline" data-consent="declined">Decline</button>
+      <button type="button" class="cookie-btn cookie-accept" data-consent="accepted">Accept</button>
+    </div>
+  `;
+
+  function choose(value) {
+    try { localStorage.setItem('jih-cookie-consent', value); } catch (e) {}
+    banner.classList.remove('open');
+    setTimeout(() => banner.remove(), 300);
+  }
+
+  banner.querySelectorAll('[data-consent]').forEach(btn => {
+    btn.addEventListener('click', () => choose(btn.dataset.consent));
+  });
+
+  document.body.appendChild(banner);
+  // Next frame so the slide-in transition runs.
+  requestAnimationFrame(() => banner.classList.add('open'));
+}
+document.addEventListener('DOMContentLoaded', setupCookieBanner);
